@@ -1,40 +1,51 @@
 package com.boardclub.eventcalendar.controller;
 
+import com.boardclub.eventcalendar.dto.UserDto;
 import com.boardclub.eventcalendar.model.User;
 import com.boardclub.eventcalendar.repository.UserRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class RegistrationController {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserRepository userRepository;
 
-    public RegistrationController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
-        model.addAttribute("user", new User());
-        return "register"; // Thymeleaf шаблон register.html
+        model.addAttribute("userDto", new UserDto());
+        return "register";
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute User user, BindingResult result, Model model) {
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            result.rejectValue("email", "error.user", "Пользователь с таким email уже существует");
+    public String registerUser(@ModelAttribute("userDto") UserDto userDto, Model model) {
+
+        if (!userDto.getPassword().equals(userDto.getConfirmPassword())) {
+            model.addAttribute("errorMessage", "Пароли не совпадают");
             return "register";
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.getRoles().add("ROLE_USER");
+        if (userRepository.existsByEmail(userDto.getEmail())) {
+            model.addAttribute("errorMessage", "Пользователь с таким email уже существует");
+            return "register";
+        }
+
+        User user = new User();
+        user.setUsername(userDto.getUsername());
+        user.setEmail(userDto.getEmail());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        user.getRoles().add("USER");  // добавляем роль по умолчанию
+
         userRepository.save(user);
-        return "redirect:/login"; // после регистрации — страница логина
+
+        return "redirect:/login?registered";
     }
 }

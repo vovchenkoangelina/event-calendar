@@ -12,11 +12,4 @@ public class EventCalendarApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(EventCalendarApplication.class, args);
 	}
-
-	@Bean
-	public CommandLineRunner printPasswordHash(PasswordEncoder passwordEncoder) {
-		return args -> {
-			System.out.println("Хеш пароля admin123: " + passwordEncoder.encode("admin123"));
-		};
-	}
 }
