@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Добро пожаловать</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+<h1>Добро пожаловать в клуб настольных игр!</h1>
+
+<p th:if="${#authorization.expression('isAuthenticated()')}">
+    Вы вошли как: <strong th:text="${#authentication.name}"></strong>
+</p>
+
+<p>
+    <a th:href="@{/logout}">Выйти</a>
+</p>
+</body>
+</html>
