@@ -33,5 +33,8 @@ public class EventService {
         return eventRepository.findByTitleContainingIgnoreCase(keyword);
     }
 
-    // добавить методы для добавления/удаления/редактирования событий, если нужно
+    public void save(Event event) {
+        eventRepository.save(event);
+    }
+
 }

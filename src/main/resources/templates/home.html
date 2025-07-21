@@ -20,6 +20,10 @@
     <a th:href="@{/home(view='month')}">Месяц</a>
 </div>
 
+<div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+    <a th:href="@{/events/new}">➕ Добавить мероприятие</a>
+</div>
+
 <table border="1" cellspacing="0" cellpadding="5">
     <tr>
         <th>Пн</th>
@@ -42,6 +46,8 @@
     </tr>
 </table>
 
+<p>Пользователь: <span th:text="${#authentication.name}"></span></p>
+<p>Роли: <span th:text="${#authentication.authorities}"></span></p>
 
 </body>
 </html>

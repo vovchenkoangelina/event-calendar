@@ -1,6 +1,7 @@
 package com.boardclub.eventcalendar.config;
 
 
+import com.boardclub.eventcalendar.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,21 +17,22 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity // включает аннотации @PreAuthorize в контроллерах
 public class SecurityConfig {
 
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
 
-    public SecurityConfig(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
+        System.out.println("Injected UserDetailsService: " + customUserDetailsService.getClass());
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable() // временно отключаем CSRF для упрощения
+                .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/register", "/login", "/css/**", "/js/**").permitAll() // доступ без логина
-                        .requestMatchers("/admin/**").hasRole("ADMIN")       // только для админа
-                        .requestMatchers("/events/register/**").hasRole("USER") // запись на мероприятие — для USER
-                        .anyRequest().authenticated()                         // остальное — только после логина
+                        .requestMatchers("/register", "/login", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/events/register/**").hasRole("USER")
+                        .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -41,7 +43,8 @@ public class SecurityConfig {
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
-                );
+                )
+                .userDetailsService(customUserDetailsService);
 
         return http.build();
     }
