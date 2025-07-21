@@ -1,18 +1,47 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Добро пожаловать</title>
-    <meta charset="UTF-8">
+    <title>Календарь клуба настольных игр</title>
+    <meta charset="UTF-8" />
 </head>
 <body>
-<h1>Добро пожаловать в клуб настольных игр!</h1>
 
-<p th:if="${#authorization.expression('isAuthenticated()')}">
-    Вы вошли как: <strong th:text="${#authentication.name}"></strong>
-</p>
+<h1>Календарь - [[${currentDate.getMonth()}]] [[${currentDate.getYear()}]]</h1>
 
-<p>
-    <a th:href="@{/logout}">Выйти</a>
-</p>
+<form method="get" th:action="@{/home}">
+    <input type="text" name="search" placeholder="Поиск" th:value="${search}" />
+    <input type="hidden" name="view" th:value="${view}" />
+    <button type="submit">Поиск</button>
+</form>
+
+<div>
+    <a th:href="@{/home(view='day')}">День</a> |
+    <a th:href="@{/home(view='week')}">Неделя</a> |
+    <a th:href="@{/home(view='month')}">Месяц</a>
+</div>
+
+<table border="1" cellspacing="0" cellpadding="5">
+    <tr>
+        <th>Пн</th>
+        <th>Вт</th>
+        <th>Ср</th>
+        <th>Чт</th>
+        <th>Пт</th>
+        <th>Сб</th>
+        <th>Вс</th>
+    </tr>
+    <tr th:each="week : ${weeks}">
+        <td th:each="day : ${week}" valign="top">
+            <div th:text="${day.date.dayOfMonth}"></div>
+            <ul>
+                <li th:each="event : ${day.events}">
+                    <span th:text="${event.title}"></span>
+                </li>
+            </ul>
+        </td>
+    </tr>
+</table>
+
+
 </body>
 </html>
