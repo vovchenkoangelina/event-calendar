@@ -3,8 +3,20 @@
 <head>
     <title>Добавить мероприятие</title>
     <meta charset="UTF-8" />
+    <style>
+        body {
+                display: flex;
+                justify-content: center;
+            }
+
+            .container {
+                max-width: 900px;
+                width: 100%;
+            }
+    </style>
 </head>
 <body>
+<div class="container">
 <h1>Добавить мероприятие</h1>
 
 <form th:action="@{/events/new}" method="post" th:object="${event}">
@@ -15,17 +27,22 @@
     <textarea th:field="*{description}"></textarea><br/>
 
     <label>Тип:</label>
-    <input type="text" th:field="*{type}" /><br/>
+    <select th:field="*{type}">
+        <option th:each="t : ${T(com.boardclub.eventcalendar.model.EventType).values()}"
+                th:value="${t}" th:text="${t}">
+        </option>
+    </select><br/>
 
     <label>Начало:</label>
-    <input type="datetime-local" th:field="*{startTime}" required/><br/>
+    <input type="datetime-local" name="startTimeStr" th:value="${startTimeStr}" required />
 
-    <label>Окончание:</label>
-    <input type="datetime-local" th:field="*{endDateTime}" required/><br/>
+    <label>Максимальное количество участников:</label>
+    <textarea th:field="*{maxParticipants}"></textarea><br/>
 
     <button type="submit">Сохранить</button>
 </form>
 
 <a th:href="@{/home}">Назад</a>
 </body>
+</div>
 </html>

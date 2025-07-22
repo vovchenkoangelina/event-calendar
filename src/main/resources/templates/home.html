@@ -1,10 +1,77 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
+
+    <div sec:authorize="isAuthenticated()">
+        Привет, <strong th:text="${#authentication.name}">пользователь</strong>!
+        Роли: <span th:text="${#authentication.authorities}"></span>
+    </div>
+
     <title>Календарь клуба настольных игр</title>
     <meta charset="UTF-8" />
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+         .top-bar {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .btn {
+        padding: 6px 12px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background-color: #45a049;
+    }
+
+    .btn-logout {
+        background-color: #f44336;
+    }
+
+    .btn-logout:hover {
+        background-color: #d32f2f;
+    }
+    </style>
 </head>
 <body>
+
+<div class="container">
+
+    <div class="top-bar">
+
+        <!-- Незалогиненный пользователь -->
+        <div sec:authorize="!isAuthenticated()">
+            <a th:href="@{/login}" class="btn">Войти</a>
+            <a th:href="@{/register}" class="btn">Регистрация</a>
+        </div>
+
+        <!-- Залогиненный пользователь -->
+        <div sec:authorize="isAuthenticated()">
+            <span>Привет, <strong th:text="${#authentication.name}">User</strong></span>
+
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-logout">Выйти</button>
+            </form>
+        </div>
+
+    </div>
 
 <h1>Календарь - [[${currentDate.getMonth()}]] [[${currentDate.getYear()}]]</h1>
 
@@ -36,7 +103,14 @@
     </tr>
     <tr th:each="week : ${weeks}">
         <td th:each="day : ${week}" valign="top">
-            <div th:text="${day.date.dayOfMonth}"></div>
+            <div>
+                <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
+                   th:href="@{/events/new(date=${day.date})}"
+                   th:text="${day.date.dayOfMonth}">
+                </a>
+                <span th:unless="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
+                      th:text="${day.date.dayOfMonth}"></span>
+            </div>
             <ul>
                 <li th:each="event : ${day.events}">
                     <span th:text="${event.title}"></span>
@@ -48,6 +122,8 @@
 
 <p>Пользователь: <span th:text="${#authentication.name}"></span></p>
 <p>Роли: <span th:text="${#authentication.authorities}"></span></p>
+
+</div>
 
 </body>
 </html>

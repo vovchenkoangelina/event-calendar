@@ -18,7 +18,6 @@ public class Event {
     private String description;
 
     private LocalDateTime startTime;
-    private LocalDateTime endDateTime;
 
     private int maxParticipants;
 
@@ -53,14 +52,6 @@ public class Event {
 
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
-    }
-
-    public LocalDateTime getEndDateTime() {
-        return endDateTime;
-    }
-
-    public void setEndDateTime(LocalDateTime endDateTime) {
-        this.endDateTime = endDateTime;
     }
 
     public int getMaxParticipants() {

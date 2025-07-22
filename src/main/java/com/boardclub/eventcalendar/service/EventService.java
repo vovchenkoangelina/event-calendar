@@ -21,12 +21,11 @@ public class EventService {
 
     public List<Event> getEventsForDay(LocalDate date) {
         LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
-        return eventRepository.findByStartTimeBetween(startOfDay, endOfDay);
+        return eventRepository.findByStartTime(startOfDay);
     }
 
     public List<Event> getEventsBetween(LocalDateTime start, LocalDateTime end) {
-        return eventRepository.findByStartTimeBetween(start, end);
+        return eventRepository.findByStartTime(start);
     }
 
     public List<Event> searchEvents(String keyword) {
