@@ -12,14 +12,19 @@ public class Event {
 
     private String title;
 
-    @Enumerated(EnumType.STRING)
-    private EventType type; // Игротека или Турнир
+    private String price;
+
+    private String complicacy;
+
+    private String host;
 
     private String description;
 
     private LocalDateTime startTime;
 
     private int maxParticipants;
+
+    private int tables;
 
 
     public String getTitle() {
@@ -28,14 +33,6 @@ public class Event {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public EventType getType() {
-        return type;
-    }
-
-    public void setType(EventType type) {
-        this.type = type;
     }
 
     public String getDescription() {
@@ -60,5 +57,37 @@ public class Event {
 
     public void setMaxParticipants(int maxParticipants) {
         this.maxParticipants = maxParticipants;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public String getComplicacy() {
+        return complicacy;
+    }
+
+    public void setComplicacy(String complicacy) {
+        this.complicacy = complicacy;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public int getTables() {
+        return tables;
+    }
+
+    public void setTables(int tables) {
+        this.tables = tables;
     }
 }

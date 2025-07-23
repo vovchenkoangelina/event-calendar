@@ -2,6 +2,7 @@ package com.boardclub.eventcalendar.controller;
 
 import com.boardclub.eventcalendar.model.Event;
 import com.boardclub.eventcalendar.service.EventService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 @Controller
 public class EventController {
@@ -53,5 +55,14 @@ public class EventController {
         event.setStartTime(LocalDateTime.parse(startTimeStr));
         eventService.save(event);
         return "redirect:/home";
+    }
+
+    @GetMapping("/events/day")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public String getEventsForDay(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, Model model) {
+        List<Event> events = eventService.getEventsForDay(date);
+        model.addAttribute("date", date);
+        model.addAttribute("events", events);
+        return "day-events";
     }
 }
