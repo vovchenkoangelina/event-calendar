@@ -42,7 +42,7 @@ public class RegistrationController {
         user.setUsername(userDto.getUsername());
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.getRoles().add("USER");  // добавляем роль по умолчанию
+        user.getRoles().add("ROLE_USER");  // добавляем роль по умолчанию
 
         userRepository.save(user);
 

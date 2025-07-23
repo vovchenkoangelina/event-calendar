@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>События на день</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fafafa;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .event-card {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin: 15px auto;
+            padding: 20px;
+            max-width: 600px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .event-card h2 {
+            margin-top: 0;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            text-decoration: none;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Мероприятия на <span th:text="${date}">дата</span></h1>
+
+<div th:if="${events.isEmpty()}">
+    <p style="text-align:center;">Нет мероприятий на этот день.</p>
+</div>
+
+<div th:each="event : ${events}" class="event-card">
+    <h2 th:text="${event.title}">Название</h2>
+    <p><strong>Начало:</strong> <span th:text="${#temporals.format(event.startTime, 'HH:mm')}">00:00</span></p>
+    <p><strong>Ведущий:</strong> <span th:text="${event.host}">Имя</span></p>
+    <p><strong>Цена:</strong> <span th:text="${event.price}">0</span></p>
+    <p><strong>Сложность:</strong> <span th:text="${event.complicacy}">Лёгкая</span></p>
+    <p><strong>Максимум участников:</strong> <span th:text="${event.maxParticipants}">8</span></p>
+    <p><strong>Количество столов:</strong> <span th:text="${event.tables}">1</span></p>
+    <p><strong>Описание:</strong><br><span th:text="${event.description}">Описание</span></p>
+</div>
+
+<div class="back-link">
+    <a th:href="@{/home}">← Назад к календарю</a>
+</div>
+
+</body>
+</html>

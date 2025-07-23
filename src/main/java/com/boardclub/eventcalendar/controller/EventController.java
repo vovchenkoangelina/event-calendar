@@ -58,7 +58,7 @@ public class EventController {
     }
 
     @GetMapping("/events/day")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     public String getEventsForDay(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, Model model) {
         List<Event> events = eventService.getEventsForDay(date);
         model.addAttribute("date", date);

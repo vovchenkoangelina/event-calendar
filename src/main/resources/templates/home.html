@@ -110,20 +110,40 @@
             text-align: center;
             color: #555;
         }
+        .day-link {
+            display: inline-block;
+            padding: 3px 6px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .day-link:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
 <div class="container">
 
     <div class="top-bar">
-        <!-- Для залогиненного пользователя -->
+        <!-- Если пользователь авторизован -->
         <div sec:authorize="isAuthenticated()">
             Привет, <b th:text="${#authentication.name}">пользователь</b> |
             Роли: <b th:text="${#authentication.authorities}">роль</b>
         </div>
-        <form th:action="@{/logout}" method="post">
+        <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
             <button type="submit" class="logout-button">Выйти</button>
         </form>
+
+        <!-- Если пользователь НЕ авторизован -->
+        <div sec:authorize="!isAuthenticated()">
+            <a th:href="@{/login}" class="add-button" style="background-color: #007bff;">Войти</a>
+            <a th:href="@{/register}" class="add-button" style="background-color: #17a2b8;">Регистрация</a>
+        </div>
     </div>
 
     <h1>Календарь - <span th:text="${currentDate.month}">Месяц</span> <span th:text="${currentDate.year}">Год</span></h1>
@@ -141,7 +161,6 @@
         </form>
     </div>
 
-    <!-- Только для администратора -->
     <div class="nav-links" sec:authorize="hasRole('ROLE_ADMIN')">
         <a th:href="@{/events/new}" class="add-button">➕ Добавить мероприятие</a>
     </div>
@@ -161,13 +180,22 @@
         <tbody>
         <tr th:each="week : ${weeks}">
             <td th:each="day : ${week}" valign="top">
-                <div>
-                    <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
-                       th:href="@{/events/new(date=${day.date})}"
-                       th:text="${day.date.dayOfMonth}">1</a>
-                    <span th:unless="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
-                          th:text="${day.date.dayOfMonth}">1</span>
-                </div>
+                <!-- Админ: ссылка на создание нового события с передачей даты -->
+                <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
+                   th:href="@{/events/new(date=${day.date})}"
+                   th:text="${day.date.dayOfMonth}"
+                   class="day-link"></a>
+
+                <!-- Пользователь (но не админ): ссылка на просмотр событий дня -->
+                <a th:if="${#authorization.expression('hasRole(''ROLE_USER'')')}"
+                   th:href="@{/events/day(date=${day.date})}"
+                   th:text="${day.date.dayOfMonth}"
+                   class="day-link"></a>
+
+                <!-- Гость или без ролей: просто число без ссылки -->
+                <span th:if="${!#authorization.expression('hasRole(''ROLE_ADMIN'')') and !#authorization.expression('hasRole(''ROLE_USER'')')}"
+                      th:text="${day.date.dayOfMonth}"></span>
+
                 <ul>
                     <li th:each="event : ${day.events}">
                         <span th:text="${#temporals.format(event.startTime, 'HH:mm')}">00:00</span>
@@ -179,10 +207,13 @@
         </tbody>
     </table>
 
-    <div class="footer">
-        Пользователь: <span th:text="${#authentication.name}">пользователь</span><br>
-        Роли: <span th:text="${#authentication.authorities}">роль</span>
+    <div>
+        Роли пользователя (полный список):
+        <ul>
+            <li th:each="auth : ${#authentication.authorities}" th:text="${auth.getAuthority()}">ROLE</li>
+        </ul>
     </div>
+
 </div>
 </body>
 </html>
