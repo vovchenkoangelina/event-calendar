@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
 
-    List<Event> findByStartTime(LocalDateTime start);
+    List<Event> findByStartTimeBetween(LocalDateTime start, LocalDateTime end);
 
     List<Event> findByTitleContainingIgnoreCase(String keyword);
 }

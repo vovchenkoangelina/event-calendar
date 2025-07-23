@@ -113,7 +113,11 @@
             </div>
             <ul>
                 <li th:each="event : ${day.events}">
-                    <span th:text="${event.title}"></span>
+                    <span th:text="${#temporals.format(event.startTime, 'HH:mm')}">Время</span>
+                    -
+                    <span th:text="${event.type}">Тип</span>
+                    :
+                    <strong th:text="${event.title}">Название</strong>
                 </li>
             </ul>
         </td>
