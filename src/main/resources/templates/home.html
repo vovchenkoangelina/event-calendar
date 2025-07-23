@@ -1,133 +1,190 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="ru">
 <head>
-
-    <div sec:authorize="isAuthenticated()">
-        Привет, <strong th:text="${#authentication.name}">пользователь</strong>!
-        Роли: <span th:text="${#authentication.authorities}"></span>
-    </div>
-
+    <meta charset="UTF-8">
     <title>Календарь клуба настольных игр</title>
-    <meta charset="UTF-8" />
     <style>
         body {
-            display: flex;
-            justify-content: center;
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
         }
 
         .container {
-            max-width: 900px;
-            width: 100%;
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
         }
-         .top-bar {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
 
-    .btn {
-        padding: 6px 12px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        text-decoration: none;
-        cursor: pointer;
-    }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-    .btn:hover {
-        background-color: #45a049;
-    }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
 
-    .btn-logout {
-        background-color: #f44336;
-    }
+        .calendar-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
 
-    .btn-logout:hover {
-        background-color: #d32f2f;
-    }
+        .calendar-table th,
+        .calendar-table td {
+            border: 1px solid #ccc;
+            padding: 5px;
+            height: 100px;
+            vertical-align: top;
+            text-align: left;
+            overflow-wrap: break-word;
+        }
+
+        .calendar-table th {
+            background-color: #f1f1f1;
+        }
+
+        .event {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .event span {
+            display: block;
+        }
+
+        .nav-links {
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .nav-links a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #0066cc;
+        }
+
+        .add-button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 12px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .add-button:hover {
+            background-color: #218838;
+        }
+
+        .logout-button {
+            background-color: #dc3545;
+            color: white;
+            padding: 6px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            text-align: center;
+            color: #555;
+        }
     </style>
 </head>
 <body>
-
 <div class="container">
 
     <div class="top-bar">
-
-        <!-- Незалогиненный пользователь -->
-        <div sec:authorize="!isAuthenticated()">
-            <a th:href="@{/login}" class="btn">Войти</a>
-            <a th:href="@{/register}" class="btn">Регистрация</a>
-        </div>
-
-        <!-- Залогиненный пользователь -->
+        <!-- Для залогиненного пользователя -->
         <div sec:authorize="isAuthenticated()">
-            <span>Привет, <strong th:text="${#authentication.name}">User</strong></span>
-
-            <form th:action="@{/logout}" method="post" style="display: inline;">
-                <button type="submit" class="btn btn-logout">Выйти</button>
-            </form>
+            Привет, <b th:text="${#authentication.name}">пользователь</b> |
+            Роли: <b th:text="${#authentication.authorities}">роль</b>
         </div>
-
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="logout-button">Выйти</button>
+        </form>
     </div>
 
-<h1>Календарь - [[${currentDate.getMonth()}]] [[${currentDate.getYear()}]]</h1>
+    <h1>Календарь - <span th:text="${currentDate.month}">Месяц</span> <span th:text="${currentDate.year}">Год</span></h1>
 
-<form method="get" th:action="@{/home}">
-    <input type="text" name="search" placeholder="Поиск" th:value="${search}" />
-    <input type="hidden" name="view" th:value="${view}" />
-    <button type="submit">Поиск</button>
-</form>
+    <div class="nav-links">
+        <a th:href="@{/home(view='day')}">День</a> |
+        <a th:href="@{/home(view='week')}">Неделя</a> |
+        <a th:href="@{/home(view='month')}">Месяц</a>
+    </div>
 
-<div>
-    <a th:href="@{/home(view='day')}">День</a> |
-    <a th:href="@{/home(view='week')}">Неделя</a> |
-    <a th:href="@{/home(view='month')}">Месяц</a>
+    <div class="nav-links">
+        <form th:action="@{/home/search}" method="get">
+            <input type="text" name="keyword" placeholder="Поиск">
+            <button type="submit">Поиск</button>
+        </form>
+    </div>
+
+    <!-- Только для администратора -->
+    <div class="nav-links" sec:authorize="hasRole('ROLE_ADMIN')">
+        <a th:href="@{/events/new}" class="add-button">➕ Добавить мероприятие</a>
+    </div>
+
+    <table class="calendar-table">
+        <thead>
+        <tr>
+            <th>Пн</th>
+            <th>Вт</th>
+            <th>Ср</th>
+            <th>Чт</th>
+            <th>Пт</th>
+            <th>Сб</th>
+            <th>Вс</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="week : ${weeks}">
+            <td th:each="day : ${week}" valign="top">
+                <div>
+                    <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
+                       th:href="@{/events/new(date=${day.date})}"
+                       th:text="${day.date.dayOfMonth}">1</a>
+                    <span th:unless="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
+                          th:text="${day.date.dayOfMonth}">1</span>
+                </div>
+                <ul>
+                    <li th:each="event : ${day.events}">
+                        <span th:text="${#temporals.format(event.startTime, 'HH:mm')}">00:00</span>
+                        -
+                        <span th:text="${event.type}">Тип</span>:
+                        <strong th:text="${event.title}">Название</strong>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Пользователь: <span th:text="${#authentication.name}">пользователь</span><br>
+        Роли: <span th:text="${#authentication.authorities}">роль</span>
+    </div>
 </div>
-
-<div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
-    <a th:href="@{/events/new}">➕ Добавить мероприятие</a>
-</div>
-
-<table border="1" cellspacing="0" cellpadding="5">
-    <tr>
-        <th>Пн</th>
-        <th>Вт</th>
-        <th>Ср</th>
-        <th>Чт</th>
-        <th>Пт</th>
-        <th>Сб</th>
-        <th>Вс</th>
-    </tr>
-    <tr th:each="week : ${weeks}">
-        <td th:each="day : ${week}" valign="top">
-            <div>
-                <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
-                   th:href="@{/events/new(date=${day.date})}"
-                   th:text="${day.date.dayOfMonth}">
-                </a>
-                <span th:unless="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
-                      th:text="${day.date.dayOfMonth}"></span>
-            </div>
-            <ul>
-                <li th:each="event : ${day.events}">
-                    <span th:text="${#temporals.format(event.startTime, 'HH:mm')}">Время</span>
-                    -
-                    <span th:text="${event.type}">Тип</span>
-                    :
-                    <strong th:text="${event.title}">Название</strong>
-                </li>
-            </ul>
-        </td>
-    </tr>
-</table>
-
-<p>Пользователь: <span th:text="${#authentication.name}"></span></p>
-<p>Роли: <span th:text="${#authentication.authorities}"></span></p>
-
-</div>
-
 </body>
 </html>
