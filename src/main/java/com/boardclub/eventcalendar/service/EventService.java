@@ -2,7 +2,9 @@ package com.boardclub.eventcalendar.service;
 
 
 import com.boardclub.eventcalendar.model.Event;
+import com.boardclub.eventcalendar.model.User;
 import com.boardclub.eventcalendar.repository.EventRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -31,6 +33,19 @@ public class EventService {
 
     public void save(Event event) {
         eventRepository.save(event);
+    }
+
+    public Event registerUserToEvent(Long eventId, User user) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Событие не найдено"));
+
+        if (event.getRegisteredUsers().size() >= event.getMaxParticipants()) {
+            throw new RuntimeException("Достигнуто максимальное число участников");
+        }
+
+        event.getRegisteredUsers().add(user);
+        eventRepository.save(event);
+        return event;  // вернуть событие для контроллера
     }
 
 }

@@ -2,6 +2,8 @@ package com.boardclub.eventcalendar.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "events")
@@ -9,6 +11,10 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    public Long getId() {
+        return id;
+    }
 
     private String title;
 
@@ -26,6 +32,21 @@ public class Event {
 
     private int tables;
 
+    @ManyToMany
+    @JoinTable(
+            name = "event_registrations",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> registeredUsers = new HashSet<>();
+
+    public Set<User> getRegisteredUsers() {
+        return registeredUsers;
+    }
+
+    public void setRegisteredUsers(Set<User> registeredUsers) {
+        this.registeredUsers = registeredUsers;
+    }
 
     public String getTitle() {
         return title;

@@ -41,19 +41,23 @@
             table-layout: fixed;
         }
 
-        .calendar-table th,
-        .calendar-table td {
-            border: 1px solid #ccc;
-            padding: 5px;
-            height: 100px;
-            vertical-align: top;
-            text-align: left;
-            overflow-wrap: break-word;
-        }
+.calendar-table th {
+    border: 1px solid #ccc;
+    padding: 5px;
+    height: 40px; /* меньше высота для заголовков */
+    vertical-align: middle; /* по центру вертикально */
+    text-align: center; /* можно по центру для дней недели */
+    background-color: #f1f1f1;
+}
 
-        .calendar-table th {
-            background-color: #f1f1f1;
-        }
+.calendar-table td {
+    border: 1px solid #ccc;
+    padding: 5px;
+    height: 100px; /* для ячеек с датами и событиями */
+    vertical-align: top;
+    text-align: left;
+    overflow-wrap: break-word;
+}
 
         .event {
             font-size: 12px;
@@ -127,6 +131,16 @@
     </style>
 </head>
 <body>
+
+<div th:if="${message}" id="flash-message" th:text="${message}" style="display:none;"></div>
+
+<script>
+    const flashMessageDiv = document.getElementById('flash-message');
+    if (flashMessageDiv) {
+        alert(flashMessageDiv.textContent);
+    }
+</script>
+
 <div class="container">
 
     <div class="top-bar">

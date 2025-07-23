@@ -15,6 +15,9 @@ public class User {
     private String email;
     private String password;
 
+    @ManyToMany(mappedBy = "registeredUsers")
+    private Set<Event> registeredEvents = new HashSet<>();
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")

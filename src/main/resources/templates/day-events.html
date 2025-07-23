@@ -56,6 +56,25 @@
     <p><strong>Максимум участников:</strong> <span th:text="${event.maxParticipants}">8</span></p>
     <p><strong>Количество столов:</strong> <span th:text="${event.tables}">1</span></p>
     <p><strong>Описание:</strong><br><span th:text="${event.description}">Описание</span></p>
+
+    <div>
+        <p><strong>Записались:</strong></p>
+        <ul>
+            <li th:each="user : ${event.registeredUsers}" th:text="${user.username}">Имя</li>
+        </ul>
+    </div>
+
+    <form th:action="@{/events/{id}/register(id=${event.id})}" method="post"
+          sec:authorize="hasRole('ROLE_USER')"
+          th:if="${event.registeredUsers.size() < event.maxParticipants}">
+        <button type="submit">Записаться</button>
+    </form>
+
+    <!-- Если набралось максимальное число -->
+    <div th:if="${event.registeredUsers.size() >= event.maxParticipants}">
+        <button disabled>Запись закрыта</button>
+    </div>
+
 </div>
 
 <div class="back-link">

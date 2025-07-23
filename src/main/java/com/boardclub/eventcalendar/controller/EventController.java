@@ -1,16 +1,19 @@
 package com.boardclub.eventcalendar.controller;
 
 import com.boardclub.eventcalendar.model.Event;
+import com.boardclub.eventcalendar.model.User;
+import com.boardclub.eventcalendar.repository.UserRepository;
 import com.boardclub.eventcalendar.service.EventService;
+import com.boardclub.eventcalendar.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,9 +24,14 @@ import java.util.List;
 public class EventController {
 
     private final EventService eventService;
+    private final UserService userService;
 
-    public EventController(EventService eventService) {
+    @Autowired
+    private UserRepository userRepository;
+
+    public EventController(EventService eventService, UserService userService) {
         this.eventService = eventService;
+        this.userService = userService;
     }
 
     @GetMapping("/events/new")
@@ -64,5 +72,19 @@ public class EventController {
         model.addAttribute("date", date);
         model.addAttribute("events", events);
         return "day-events";
+    }
+
+    @PostMapping("/events/{id}/register")
+    public String registerToEvent(@PathVariable Long id, Principal principal, RedirectAttributes redirectAttributes) {
+        User user = userService.findByEmail(principal.getName());
+
+        try {
+            Event event = eventService.registerUserToEvent(id, user);
+            redirectAttributes.addFlashAttribute("message", "Вы записаны на " + event.getTitle());
+        } catch (RuntimeException e) {
+            // Например, если превышен максимум участников
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/home";
     }
 }
