@@ -194,21 +194,10 @@
         <tbody>
         <tr th:each="week : ${weeks}">
             <td th:each="day : ${week}" valign="top">
-                <!-- Админ: ссылка на создание нового события с передачей даты -->
-                <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
-                   th:href="@{/events/new(date=${day.date})}"
+
+                <a th:href="@{/events/day(date=${day.date})}"
                    th:text="${day.date.dayOfMonth}"
                    class="day-link"></a>
-
-                <!-- Пользователь (но не админ): ссылка на просмотр событий дня -->
-                <a th:if="${#authorization.expression('hasRole(''ROLE_USER'')')}"
-                   th:href="@{/events/day(date=${day.date})}"
-                   th:text="${day.date.dayOfMonth}"
-                   class="day-link"></a>
-
-                <!-- Гость или без ролей: просто число без ссылки -->
-                <span th:if="${!#authorization.expression('hasRole(''ROLE_ADMIN'')') and !#authorization.expression('hasRole(''ROLE_USER'')')}"
-                      th:text="${day.date.dayOfMonth}"></span>
 
                 <ul>
                     <li th:each="event : ${day.events}">
