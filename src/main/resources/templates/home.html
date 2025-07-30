@@ -73,27 +73,6 @@
             text-align: center;
         }
 
-        .nav-links a {
-            margin: 0 10px;
-            text-decoration: none;
-            color: #0066cc;
-        }
-
-        .add-button {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 6px 12px;
-            background-color: #28a745;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        .add-button:hover {
-            background-color: #218838;
-        }
-
         .logout-button {
             background-color: #dc3545;
             color: white;
@@ -173,10 +152,6 @@
             <input type="text" name="keyword" placeholder="Поиск">
             <button type="submit">Поиск</button>
         </form>
-    </div>
-
-    <div class="nav-links" sec:authorize="hasRole('ROLE_ADMIN')">
-        <a th:href="@{/events/new}" class="add-button">➕ Добавить мероприятие</a>
     </div>
 
     <table class="calendar-table">

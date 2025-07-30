@@ -37,6 +37,32 @@
             text-decoration: none;
             color: #007bff;
         }
+
+        .nav-links a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #0066cc;
+        }
+
+        .add-button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 12px;
+            background-color: #28a745;
+            color: white !important;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .add-button:hover {
+            background-color: #218838;
+        }
+
+        .button-wrapper {
+            display: flex;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
@@ -45,6 +71,13 @@
 
 <div th:if="${events.isEmpty()}">
     <p style="text-align:center;">Нет мероприятий на этот день.</p>
+</div>
+
+<div class="nav-links" sec:authorize="hasRole('ROLE_ADMIN')">
+    <div class="button-wrapper">
+        <a th:href="@{/events/new(date=${date})}"
+           class="add-button">➕ Добавить мероприятие</a>
+    </div>
 </div>
 
 <div th:each="event : ${events}" class="event-card">

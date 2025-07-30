@@ -5,51 +5,118 @@
     <meta charset="UTF-8" />
     <style>
         body {
-                display: flex;
-                justify-content: center;
-            }
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+            font-family: inherit;
+        }
 
-            .container {
-                max-width: 900px;
-                width: 100%;
-            }
+        .container {
+            max-width: 700px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .form-row label {
+            width: 200px;
+            padding-top: 6px;
+        }
+
+        .form-row input[type="text"],
+        .form-row input[type="time"],
+        .form-row textarea {
+            flex: 1;
+            padding: 6px;
+            font-size: 15px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 6px 16px;
+            font-size: 15px;
+            align-self: flex-start;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-<h1>Добавить мероприятие</h1>
+    <h1 th:text="${displayDate != '' ? 'Добавить мероприятие на ' + displayDate : 'Добавить мероприятие'}">
+        Добавить мероприятие
+    </h1>
 
-<form th:action="@{/events/new}" method="post" th:object="${event}">
+    <form th:action="@{/events/new}" method="post" th:object="${event}">
+        <div class="form-row">
+            <label>Время начала:</label>
+            <input type="time" name="startTimeStr" th:value="${startTimeStr}" required />
+        </div>
 
-    <label>Начало:</label>
-    <input type="datetime-local" name="startTimeStr" th:value="${startTimeStr}" required />
+        <input type="hidden" name="date"
+               th:value="${event.startTime != null ? event.startTime.toLocalDate() : ''}" />
 
-    <label>Название:</label>
-    <input type="text" th:field="*{title}" required/><br/>
+        <div class="form-row">
+            <label>Название:</label>
+            <input type="text" th:field="*{title}" required />
+        </div>
 
-    <label>Стоимость:</label>
-    <input type="text" th:field="*{price}" required/><br/>
+        <div class="form-row">
+            <label>Стоимость:</label>
+            <input type="text" th:field="*{price}" required />
+        </div>
 
-    <label>Количество человек:</label>
-    <textarea th:field="*{maxParticipants}"></textarea><br/>
+        <div class="form-row">
+            <label>Количество человек:</label>
+            <input type="number" th:field="*{maxParticipants}" min="0" />
+        </div>
 
-    <label>Сложность правил:</label>
-    <textarea th:field="*{complicacy}"></textarea><br/>
+        <div class="form-row">
+            <label>Сложность правил:</label>
+            <textarea th:field="*{complicacy}"></textarea>
+        </div>
 
-    <label>Описание:</label>
-    <textarea th:field="*{description}"></textarea><br/>
+        <div class="form-row">
+            <label>Описание:</label>
+            <textarea th:field="*{description}"></textarea>
+        </div>
 
-    <label>Организатор:</label>
-    <textarea th:field="*{host}"></textarea><br/>
+        <div class="form-row">
+            <label>Организатор:</label>
+            <textarea th:field="*{host}"></textarea>
+        </div>
 
-    <label>Количество столов:</label>
-    <textarea th:field="*{tables}"></textarea><br/>
+        <div class="form-row">
+            <label>Количество столов:</label>
+            <input type="number" th:field="*{tables}" />
+        </div>
 
+        <button type="submit">Сохранить</button>
+    </form>
 
-    <button type="submit">Сохранить</button>
-</form>
-
-<a th:href="@{/home}">Назад</a>
-</body>
+    <a th:href="@{/home}">Назад</a>
 </div>
+</body>
 </html>
+
+

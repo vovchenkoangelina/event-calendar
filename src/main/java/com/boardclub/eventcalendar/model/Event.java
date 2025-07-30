@@ -28,9 +28,9 @@ public class Event {
 
     private LocalDateTime startTime;
 
-    private int maxParticipants;
+    private Integer maxParticipants;
 
-    private int tables;
+    private Integer tables;
 
     @ManyToMany
     @JoinTable(
@@ -72,7 +72,7 @@ public class Event {
         this.startTime = startTime;
     }
 
-    public int getMaxParticipants() {
+    public Integer getMaxParticipants() {
         return maxParticipants;
     }
 
@@ -104,7 +104,7 @@ public class Event {
         this.host = host;
     }
 
-    public int getTables() {
+    public Integer getTables() {
         return tables;
     }
 
