@@ -62,14 +62,6 @@ public class EventController {
         return "event-form";
     }
 
-//    @PostMapping("/events/new")
-//    @PreAuthorize("hasRole('ADMIN')")
-//    public String saveEvent(@RequestParam String startTimeStr, @ModelAttribute Event event) {
-//        event.setStartTime(LocalDateTime.parse(startTimeStr));
-//        eventService.save(event);
-//        return "redirect:/home";
-//    }
-
     @PostMapping("/events/new")
     @PreAuthorize("hasRole('ADMIN')")
     public String saveEvent(@RequestParam String startTimeStr, @RequestParam String date, @ModelAttribute Event event) {
@@ -80,6 +72,37 @@ public class EventController {
         return "redirect:/home";
     }
 
+    // Отобразить форму редактирования
+    @GetMapping("/events/{id}/edit")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        Event event = eventService.findById(id);
+        if (event == null) {
+            return "redirect:/home?error=notfound";
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        String formattedStartTime = event.getStartTime().format(formatter);
+        model.addAttribute("event", event);
+        model.addAttribute("formattedStartTime", formattedStartTime);
+        return "event-edit";  // создадим этот шаблон
+    }
+
+    // Обработать сохранение изменений
+    @PostMapping("/events/{id}/edit")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String updateEvent(@PathVariable Long id, @ModelAttribute Event event) {
+        eventService.updateEvent(id, event);
+        return "redirect:/events/day?date=" + event.getStartTime().toLocalDate();
+    }
+
+    // Удаление события
+    @PostMapping("/events/{id}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String deleteEvent(@PathVariable Long id) {
+        eventService.deleteById(id);
+        return "redirect:/home";
+    }
+
     @GetMapping("/events/day")
     public String getEventsForDay(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, Model model) {
         List<Event> events = eventService.getEventsForDay(date);
@@ -87,6 +110,8 @@ public class EventController {
         model.addAttribute("events", events);
         return "day-events";
     }
+
+
 
     @PostMapping("/events/{id}/register")
     public String registerToEvent(@PathVariable Long id, Principal principal, RedirectAttributes redirectAttributes) {

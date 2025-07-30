@@ -97,6 +97,17 @@
         </ul>
     </div>
 
+    <div sec:authorize="hasRole('ROLE_ADMIN')">
+        <a th:href="@{/events/{id}/edit(id=${event.id})}" class="add-button" style="background-color:#007bff;">Редактировать</a>
+
+        <form th:action="@{/events/{id}/delete(id=${event.id})}"
+              method="post"
+              onsubmit="return confirm('Точно удаляем?');"
+              th:inline="javascript">
+            <button type="submit" class="add-button" style="background-color:#dc3545;">Удалить</button>
+        </form>
+    </div>
+
     <form th:action="@{/events/{id}/register(id=${event.id})}" method="post"
           sec:authorize="hasRole('ROLE_USER')"
           th:if="${event.registeredUsers.size() < event.maxParticipants}">

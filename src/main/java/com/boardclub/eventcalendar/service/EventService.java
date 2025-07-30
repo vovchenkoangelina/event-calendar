@@ -35,6 +35,26 @@ public class EventService {
         eventRepository.save(event);
     }
 
+    public void updateEvent(Long id, Event updatedEvent) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        event.setTitle(updatedEvent.getTitle());
+        event.setStartTime(updatedEvent.getStartTime());
+        event.setPrice(updatedEvent.getPrice());
+        event.setComplicacy(updatedEvent.getComplicacy());
+        event.setHost(updatedEvent.getHost());
+        event.setDescription(updatedEvent.getDescription());
+        event.setMaxParticipants(updatedEvent.getMaxParticipants());
+        event.setTables(updatedEvent.getTables());
+
+        eventRepository.save(event);
+    }
+
+    public void deleteById(Long id) {
+        eventRepository.deleteById(id);
+    }
+
     public Event registerUserToEvent(Long eventId, User user) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Событие не найдено"));
@@ -48,4 +68,8 @@ public class EventService {
         return event;  // вернуть событие для контроллера
     }
 
+    public Event findById(Long id) {
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Событие не найдено"));
+    }
 }

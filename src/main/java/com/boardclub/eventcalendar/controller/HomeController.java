@@ -22,6 +22,11 @@ public class HomeController {
         this.eventService = eventService;
     }
 
+    @GetMapping("/")
+    public String redirectToHome() {
+        return "redirect:/home";
+    }
+
     @GetMapping("/home")
     public String showCalendar(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
