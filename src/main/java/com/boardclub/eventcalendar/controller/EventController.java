@@ -126,4 +126,16 @@ public class EventController {
         }
         return "redirect:/home";
     }
+
+    @PostMapping("/events/{eventId}/removeUser/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String removeUserFromEvent(@PathVariable Long eventId,
+                                      @PathVariable Long userId,
+                                      RedirectAttributes redirectAttributes) {
+        eventService.removeUserFromEvent(eventId, userId);
+        redirectAttributes.addFlashAttribute("message", "Пользователь удалён из мероприятия.");
+
+        LocalDate dateOnly = eventService.findById(eventId).getStartTime().toLocalDate();
+        return "redirect:/events/day?date=" + dateOnly.toString();
+    }
 }

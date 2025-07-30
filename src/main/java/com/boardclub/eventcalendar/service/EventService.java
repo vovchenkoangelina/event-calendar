@@ -72,4 +72,16 @@ public class EventService {
         return eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Событие не найдено"));
     }
+
+    public void removeUserFromEvent(Long eventId, Long userId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Событие не найдено"));
+        User userToRemove = event.getRegisteredUsers().stream()
+                .filter(u -> u.getId().equals(userId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден в списке записавшихся"));
+
+        event.getRegisteredUsers().remove(userToRemove);
+        eventRepository.save(event);
+    }
 }

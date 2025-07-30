@@ -90,13 +90,6 @@
     <p><strong>Количество столов:</strong> <span th:text="${event.tables}">1</span></p>
     <p><strong>Описание:</strong><br><span th:text="${event.description}">Описание</span></p>
 
-    <div>
-        <p><strong>Записались:</strong></p>
-        <ul>
-            <li th:each="user : ${event.registeredUsers}" th:text="${user.username}">Имя</li>
-        </ul>
-    </div>
-
     <div sec:authorize="hasRole('ROLE_ADMIN')">
         <a th:href="@{/events/{id}/edit(id=${event.id})}" class="add-button" style="background-color:#007bff;">Редактировать</a>
 
@@ -106,6 +99,22 @@
               th:inline="javascript">
             <button type="submit" class="add-button" style="background-color:#dc3545;">Удалить</button>
         </form>
+    </div>
+
+    <div>
+        <p><strong>Записались:</strong></p>
+        <ul>
+            <li th:each="user : ${event.registeredUsers}">
+                <span th:text="${user.username}">Имя</span>
+                <form th:action="@{/events/{eventId}/removeUser/{userId}(eventId=${event.id}, userId=${user.id})}"
+                      method="post"
+                      th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+                      th:inline="javascript"
+                      style="display:inline;">
+                    <button type="submit" onclick="return confirm('Точно удалить из списка участников?');">❌</button>
+                </form>
+            </li>
+        </ul>
     </div>
 
     <form th:action="@{/events/{id}/register(id=${event.id})}" method="post"

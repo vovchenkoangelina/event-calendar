@@ -10,8 +10,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.*;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Controller
 public class HomeController {
@@ -36,6 +38,11 @@ public class HomeController {
         LocalDate currentDate = (date != null) ? date : LocalDate.now();
         YearMonth yearMonth = YearMonth.from(currentDate);
 
+        // Добавляем месяц и год в model
+        String monthRu = currentDate.getMonth().getDisplayName(TextStyle.FULL, new Locale("ru"));
+        model.addAttribute("monthRu", monthRu);
+        model.addAttribute("year", currentDate.getYear());
+
         LocalDate firstOfMonth = yearMonth.atDay(1);
         DayOfWeek firstWeekDay = firstOfMonth.getDayOfWeek();
         int shift = firstWeekDay.getValue() - 1; // сделать понедельник = 0, воскресенье = 6
@@ -57,4 +64,5 @@ public class HomeController {
         model.addAttribute("currentDate", currentDate);
         return "home";
     }
+
 }
