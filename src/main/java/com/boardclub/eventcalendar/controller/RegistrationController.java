@@ -42,7 +42,13 @@ public class RegistrationController {
         user.setUsername(userDto.getUsername());
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.getRoles().add("ROLE_USER");  // добавляем роль по умолчанию
+
+        long userCount = userRepository.count();
+        if (userCount < 2) {
+            user.getRoles().add("ROLE_ADMIN");
+        } else {
+            user.getRoles().add("ROLE_USER");
+        }
 
         userRepository.save(user);
 
