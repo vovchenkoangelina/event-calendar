@@ -127,6 +127,20 @@ public class EventController {
         return "redirect:/home";
     }
 
+    @PostMapping("/events/{id}/register/reserve")
+    public String registerToEventReserve(@PathVariable Long id, Principal principal, RedirectAttributes redirectAttributes) {
+        User user = userService.findByEmail(principal.getName());
+
+        try {
+            Event event = eventService.registerUserToEventReserve(id, user);
+            redirectAttributes.addFlashAttribute("message", "Вы записаны в резерв на " + event.getTitle());
+        } catch (RuntimeException e) {
+            // Например, если превышен максимум участников
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/home";
+    }
+
     @PostMapping("/events/{eventId}/removeUser/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public String removeUserFromEvent(@PathVariable Long eventId,
@@ -137,5 +151,15 @@ public class EventController {
 
         LocalDate dateOnly = eventService.findById(eventId).getStartTime().toLocalDate();
         return "redirect:/events/day?date=" + dateOnly.toString();
+    }
+
+    @PostMapping("/events/{eventId}/removeReserveUser/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String removeUserFromReserve(@PathVariable Long eventId,
+                                        @PathVariable Long userId,
+                                        RedirectAttributes redirectAttributes) {
+        eventService.removeUserFromReserve(eventId, userId);
+        redirectAttributes.addFlashAttribute("message", "Пользователь удалён из резерва.");
+        return "redirect:/events/day?date=" + eventService.findById(eventId).getStartTime().toLocalDate();
     }
 }

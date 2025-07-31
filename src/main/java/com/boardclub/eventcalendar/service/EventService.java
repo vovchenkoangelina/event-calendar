@@ -68,6 +68,15 @@ public class EventService {
         return event;  // вернуть событие для контроллера
     }
 
+    public Event registerUserToEventReserve(Long eventId, User user) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Событие не найдено"));
+
+        event.getReserveUsers().add(user);
+        eventRepository.save(event);
+        return event;  // вернуть событие для контроллера
+    }
+
     public Event findById(Long id) {
         return eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Событие не найдено"));
@@ -84,4 +93,18 @@ public class EventService {
         event.getRegisteredUsers().remove(userToRemove);
         eventRepository.save(event);
     }
+
+    public void removeUserFromReserve(Long eventId, Long userId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Событие не найдено"));
+        User userToRemove = event.getReserveUsers().stream()
+                .filter(u -> u.getId().equals(userId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден в списке записавшихся"));
+
+        event.getReserveUsers().remove(userToRemove);
+        eventRepository.save(event);
+    }
+
+
 }

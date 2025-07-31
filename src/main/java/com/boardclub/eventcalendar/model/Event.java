@@ -40,6 +40,22 @@ public class Event {
     )
     private Set<User> registeredUsers = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "event_registrations_reserve",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> reserveUsers = new HashSet<>();
+
+    public Set<User> getReserveUsers() {
+        return reserveUsers;
+    }
+
+    public void setReserveUsers(Set<User> reserveUsers) {
+        this.reserveUsers = reserveUsers;
+    }
+
     public Set<User> getRegisteredUsers() {
         return registeredUsers;
     }

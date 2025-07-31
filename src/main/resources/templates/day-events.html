@@ -117,15 +117,36 @@
         </ul>
     </div>
 
+    <div>
+        <p><strong>Резерв:</strong></p>
+        <ul>
+            <li th:each="user : ${event.reserveUsers}">
+                <span th:text="${user.username}">Имя</span>
+                <form th:action="@{/events/{eventId}/removeReserveUser/{userId}(eventId=${event.id}, userId=${user.id})}"
+                      method="post"
+                      th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+                      style="display:inline;">
+                    <button type="submit" onclick="return confirm('Удалить из резерва?')">❌</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Если есть свободные места -->
     <form th:action="@{/events/{id}/register(id=${event.id})}" method="post"
-          sec:authorize="hasRole('ROLE_USER')"
+          sec:authorize="isAuthenticated()"
           th:if="${event.registeredUsers.size() < event.maxParticipants}">
         <button type="submit">Записаться</button>
     </form>
 
-    <!-- Если набралось максимальное число -->
+    <!-- Если мест больше нет -->
     <div th:if="${event.registeredUsers.size() >= event.maxParticipants}">
         <button disabled>Запись закрыта</button>
+
+        <form th:action="@{/events/{id}/register/reserve(id=${event.id})}" method="post"
+              sec:authorize="isAuthenticated()">
+            <button type="submit">Записаться в резерв</button>
+        </form>
     </div>
 
 </div>
