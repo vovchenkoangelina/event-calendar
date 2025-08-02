@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Запись на мероприятие</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .container {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 450px;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 25px;
+            font-weight: 600;
+            font-size: 24px;
+            color: #333;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-align: left;
+            color: #555;
+        }
+        textarea {
+            width: 100%;
+            resize: vertical;
+            padding: 8px;
+            font-size: 14px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            min-height: 70px;
+            font-family: inherit;
+        }
+        .radio-group {
+            text-align: left;
+            margin-bottom: 25px;
+        }
+        .radio-group label {
+            margin-right: 15px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        input[type="radio"] {
+            margin-right: 6px;
+            vertical-align: middle;
+            cursor: pointer;
+        }
+        button {
+            background-color: #2a9df4;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-right: 15px;
+        }
+        button:hover {
+            background-color: #2381d6;
+        }
+        a {
+            font-size: 16px;
+            color: #2a9df4;
+            text-decoration: none;
+            vertical-align: middle;
+            cursor: pointer;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 th:text="'Запись на: ' + ${event.title}">Название мероприятия</h1>
+
+    <form method="post" th:action="@{'/events/' + ${event.id} + '/register'}">
+
+        <label>Комментарий:</label>
+        <textarea name="comment" id="comment" rows="3" placeholder="Ваш комментарий..."></textarea>
+
+        <label>Дополнительные гости:</label>
+        <div class="radio-group">
+            <label><input type="radio" name="additionalGuests" value="0" checked>0</label>
+            <label><input type="radio" name="additionalGuests" value="1">+1</label>
+            <label><input type="radio" name="additionalGuests" value="2">+2</label>
+            <label><input type="radio" name="additionalGuests" value="3">+3</label>
+        </div>
+
+        <!-- если нужно включить запись в резерв — добавить скрытое поле -->
+        <input type="hidden" name="reserve" th:value="${isReserve}">
+
+        <button type="submit">Записаться</button>
+        <a th:href="@{/events/day(date=${event.startTime.toLocalDate()})}">Назад</a>
+    </form>
+</div>
+</body>
+</html>

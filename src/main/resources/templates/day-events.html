@@ -75,8 +75,7 @@
 
 <div class="nav-links" sec:authorize="hasRole('ROLE_ADMIN')">
     <div class="button-wrapper">
-        <a th:href="@{/events/new(date=${date})}"
-           class="add-button">➕ Добавить мероприятие</a>
+        <a th:href="@{/events/new(date=${date})}" class="add-button">➕ Добавить мероприятие</a>
     </div>
 </div>
 
@@ -93,20 +92,23 @@
     <div sec:authorize="hasRole('ROLE_ADMIN')">
         <a th:href="@{/events/{id}/edit(id=${event.id})}" class="add-button" style="background-color:#007bff;">Редактировать</a>
 
-        <form th:action="@{/events/{id}/delete(id=${event.id})}"
-              method="post"
+        <form th:action="@{/events/{id}/delete(id=${event.id})}" method="post"
               onsubmit="return confirm('Точно удаляем?');"
               th:inline="javascript">
             <button type="submit" class="add-button" style="background-color:#dc3545;">Удалить</button>
         </form>
     </div>
 
+    <!-- ✅ СПИСОК ЗАРЕГИСТРИРОВАННЫХ -->
     <div>
         <p><strong>Записались:</strong></p>
         <ul>
-            <li th:each="user : ${event.registeredUsers}">
-                <span th:text="${user.username}">Имя</span>
-                <form th:action="@{/events/{eventId}/removeUser/{userId}(eventId=${event.id}, userId=${user.id})}"
+            <li th:each="reg : ${event.registrations.?[!reserve]}">
+                <span th:text="${reg.user.username}">Имя</span>
+                <span th:if="${reg.additionalGuests > 0}">(+<span th:text="${reg.additionalGuests}">1</span>)</span>
+                <span th:if="${reg.comment != null and !#strings.isEmpty(reg.comment)}"> — <i th:text="${reg.comment}"></i></span>
+
+                <form th:action="@{/events/{eventId}/removeUser/{userId}(eventId=${event.id}, userId=${reg.user.id})}"
                       method="post"
                       th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
                       th:inline="javascript"
@@ -117,36 +119,42 @@
         </ul>
     </div>
 
-    <div>
-        <p><strong>Резерв:</strong></p>
-        <ul>
-            <li th:each="user : ${event.reserveUsers}">
-                <span th:text="${user.username}">Имя</span>
-                <form th:action="@{/events/{eventId}/removeReserveUser/{userId}(eventId=${event.id}, userId=${user.id})}"
-                      method="post"
-                      th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
-                      style="display:inline;">
-                    <button type="submit" onclick="return confirm('Удалить из резерва?')">❌</button>
-                </form>
-            </li>
-        </ul>
-    </div>
-
     <!-- Если есть свободные места -->
-    <form th:action="@{/events/{id}/register(id=${event.id})}" method="post"
-          sec:authorize="isAuthenticated()"
-          th:if="${event.registeredUsers.size() < event.maxParticipants}">
-        <button type="submit">Записаться</button>
-    </form>
+    <a th:href="@{/events/{id}/register(id=${event.id})}"
+       class="add-button"
+       th:if="${event.totalParticipantsCount < event.maxParticipants}"
+       sec:authorize="isAuthenticated()">
+        Записаться
+    </a>
 
     <!-- Если мест больше нет -->
-    <div th:if="${event.registeredUsers.size() >= event.maxParticipants}">
+    <div th:if="${event.totalParticipantsCount >= event.maxParticipants}">
         <button disabled>Запись закрыта</button>
 
-        <form th:action="@{/events/{id}/register/reserve(id=${event.id})}" method="post"
-              sec:authorize="isAuthenticated()">
-            <button type="submit">Записаться в резерв</button>
-        </form>
+        <a th:href="@{/events/{id}/register/reserve(id=${event.id})}"
+           class="add-button"
+           sec:authorize="isAuthenticated()">
+            Записаться в резерв
+        </a>
+
+        <!-- ✅ СПИСОК РЕЗЕРВА -->
+        <div>
+            <p><strong>Резерв:</strong></p>
+            <ul>
+                <li th:each="reg : ${event.registrations.?[reserve]}">
+                    <span th:text="${reg.user.username}">Имя</span>
+                    <span th:if="${reg.additionalGuests > 0}">(+<span th:text="${reg.additionalGuests}">1</span>)</span>
+                    <span th:if="${reg.comment != null and !#strings.isEmpty(reg.comment)}"> — <i th:text="${reg.comment}"></i></span>
+
+                    <form th:action="@{/events/{eventId}/removeReserveUser/{userId}(eventId=${event.id}, userId=${reg.user.id})}"
+                          method="post"
+                          th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+                          style="display:inline;">
+                        <button type="submit" onclick="return confirm('Удалить из резерва?')">❌</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
     </div>
 
 </div>

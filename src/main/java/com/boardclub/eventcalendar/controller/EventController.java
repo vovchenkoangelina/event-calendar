@@ -8,6 +8,7 @@ import com.boardclub.eventcalendar.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -114,32 +115,71 @@ public class EventController {
 
 
     @PostMapping("/events/{id}/register")
-    public String registerToEvent(@PathVariable Long id, Principal principal, RedirectAttributes redirectAttributes) {
+    public String registerToEvent(
+            @PathVariable Long id,
+            @RequestParam Integer additionalGuests,
+            @RequestParam String comment,
+            @RequestParam(required = false, defaultValue = "false") Boolean reserve,
+            Principal principal,
+            RedirectAttributes redirectAttributes
+    ) {
         User user = userService.findByEmail(principal.getName());
 
         try {
-            Event event = eventService.registerUserToEvent(id, user);
-            redirectAttributes.addFlashAttribute("message", "Вы записаны на " + event.getTitle());
+            if (reserve) {
+                eventService.registerUserToEventReserve(id, user, additionalGuests, comment);
+                redirectAttributes.addFlashAttribute("message", "Вы записаны в резерв на мероприятие");
+            } else {
+                eventService.registerUserToEvent(id, user, additionalGuests, comment);
+                redirectAttributes.addFlashAttribute("message", "Вы успешно записались на мероприятие");
+            }
         } catch (RuntimeException e) {
-            // Например, если превышен максимум участников
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
+
         return "redirect:/home";
     }
 
-    @PostMapping("/events/{id}/register/reserve")
-    public String registerToEventReserve(@PathVariable Long id, Principal principal, RedirectAttributes redirectAttributes) {
-        User user = userService.findByEmail(principal.getName());
-
-        try {
-            Event event = eventService.registerUserToEventReserve(id, user);
-            redirectAttributes.addFlashAttribute("message", "Вы записаны в резерв на " + event.getTitle());
-        } catch (RuntimeException e) {
-            // Например, если превышен максимум участников
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-        }
-        return "redirect:/home";
+    @GetMapping("/events/{id}/register")
+    @PreAuthorize("isAuthenticated()")
+    public String showRegistrationForm(@PathVariable Long id, Model model) {
+        Event event = eventService.findById(id);
+        model.addAttribute("event", event);
+        return "event-register";
     }
+
+    @GetMapping("/events/{id}/register/reserve")
+    public String showReserveForm(@PathVariable Long id, Model model) {
+        Event event = eventService.findById(id);
+        model.addAttribute("event", event);
+        model.addAttribute("isReserve", true);
+        return "event-register";
+    }
+
+//    @PostMapping("/events/{id}/registerWithDetails")
+//    @PreAuthorize("isAuthenticated()")
+//    public String registerWithDetails(@PathVariable Long id,
+//                                      @RequestParam String comment,
+//                                      @RequestParam int additionalGuests,
+//                                      Principal principal) {
+//        String email = principal.getName();
+//        User user = userService.findByEmail(email);  // ← тут ты точно получаешь JPA User
+//        eventService.registerUserToEvent(id, user, additionalGuests, comment);
+//        return "redirect:/events/day?date=" + eventService.findById(id).getStartTime().toLocalDate();
+//    }
+
+//    @PostMapping("/events/{id}/register/reserve")
+//    public String registerToEventReserve(@PathVariable Long id, Principal principal, RedirectAttributes redirectAttributes) {
+//        User user = userService.findByEmail(principal.getName());
+//
+//        try {
+//            Event event = eventService.registerUserToEventReserve(id, user);
+//            redirectAttributes.addFlashAttribute("message", "Вы записаны в резерв на " + event.getTitle());
+//        } catch (RuntimeException e) {
+//            redirectAttributes.addFlashAttribute("error", e.getMessage());
+//        }
+//        return "redirect:/home";
+//    }
 
     @PostMapping("/events/{eventId}/removeUser/{userId}")
     @PreAuthorize("hasRole('ADMIN')")

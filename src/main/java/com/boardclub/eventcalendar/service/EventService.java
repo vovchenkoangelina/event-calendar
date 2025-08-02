@@ -1,25 +1,29 @@
 package com.boardclub.eventcalendar.service;
 
-
 import com.boardclub.eventcalendar.model.Event;
+import com.boardclub.eventcalendar.model.EventRegistration;
 import com.boardclub.eventcalendar.model.User;
+import com.boardclub.eventcalendar.repository.EventRegistrationRepository;
 import com.boardclub.eventcalendar.repository.EventRepository;
-import org.springframework.data.jpa.repository.Query;
+import com.boardclub.eventcalendar.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 @Service
 public class EventService {
 
-    private final EventRepository eventRepository;
+    @Autowired
+    private EventRegistrationRepository eventRegistrationRepository;
 
-    public EventService(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
-    }
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public List<Event> getEventsForDay(LocalDate date) {
         LocalDateTime startOfDay = date.atStartOfDay();
@@ -37,7 +41,7 @@ public class EventService {
 
     public void updateEvent(Long id, Event updatedEvent) {
         Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new RuntimeException("Событие не найдено"));
 
         event.setTitle(updatedEvent.getTitle());
         event.setStartTime(updatedEvent.getStartTime());
@@ -55,26 +59,52 @@ public class EventService {
         eventRepository.deleteById(id);
     }
 
-    public Event registerUserToEvent(Long eventId, User user) {
+    public void registerUserToEvent(Long eventId, User user, Integer additionalGuests, String comment) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Событие не найдено"));
 
-        if (event.getRegisteredUsers().size() >= event.getMaxParticipants()) {
-            throw new RuntimeException("Достигнуто максимальное число участников");
+        int currentCount = event.getTotalParticipantsCount();
+        int newCount = currentCount + 1 + additionalGuests;
+
+        if (newCount > event.getMaxParticipants()) {
+            throw new RuntimeException("Достигнуто максимальное число участников с учётом дополнительных гостей");
         }
 
-        event.getRegisteredUsers().add(user);
-        eventRepository.save(event);
-        return event;  // вернуть событие для контроллера
+        boolean alreadyRegistered = eventRegistrationRepository.existsByEventAndUser(event, user);
+        if (alreadyRegistered) {
+            throw new RuntimeException("Вы уже записаны на это мероприятие");
+        }
+
+        EventRegistration registration = new EventRegistration();
+        registration.setEvent(event);
+        registration.setUser(user);
+        registration.setAdditionalGuests(additionalGuests);
+        registration.setComment(comment);
+        registration.setReserve(false); // Основной список
+
+        eventRegistrationRepository.save(registration);
     }
 
-    public Event registerUserToEventReserve(Long eventId, User user) {
+    public void registerUserToEventReserve(Long eventId, User user, Integer additionalGuests, String comment) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Событие не найдено"));
 
-        event.getReserveUsers().add(user);
-        eventRepository.save(event);
-        return event;  // вернуть событие для контроллера
+        boolean alreadyRegistered = eventRegistrationRepository.existsByEventAndUser(event, user);
+        if (alreadyRegistered) {
+            throw new RuntimeException("Вы уже зарегистрированы (в списке или в резерве)");
+        }
+
+        EventRegistration registration = new EventRegistration();
+        registration.setEvent(event);
+        registration.setUser(user);
+        registration.setAdditionalGuests(additionalGuests);
+        registration.setComment(comment);
+        registration.setReserve(true); // Резервный список
+
+        System.out.println(">>> Регистрируем в резерв: " + user.getUsername() + ", guests: " + additionalGuests);
+        System.out.println(">>> reserve = " + registration.isReserve());
+
+        eventRegistrationRepository.save(registration);
     }
 
     public Event findById(Long id) {
@@ -85,26 +115,24 @@ public class EventService {
     public void removeUserFromEvent(Long eventId, Long userId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Событие не найдено"));
-        User userToRemove = event.getRegisteredUsers().stream()
-                .filter(u -> u.getId().equals(userId))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден в списке записавшихся"));
 
-        event.getRegisteredUsers().remove(userToRemove);
-        eventRepository.save(event);
+        EventRegistration registration = event.getRegistrations().stream()
+                .filter(reg -> !reg.isReserve() && reg.getUser().getId().equals(userId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден в основном списке"));
+
+        eventRegistrationRepository.delete(registration);
     }
 
     public void removeUserFromReserve(Long eventId, Long userId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Событие не найдено"));
-        User userToRemove = event.getReserveUsers().stream()
-                .filter(u -> u.getId().equals(userId))
+
+        EventRegistration registration = event.getRegistrations().stream()
+                .filter(reg -> reg.isReserve() && reg.getUser().getId().equals(userId))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден в списке записавшихся"));
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден в резерве"));
 
-        event.getReserveUsers().remove(userToRemove);
-        eventRepository.save(event);
+        eventRegistrationRepository.delete(registration);
     }
-
-
 }

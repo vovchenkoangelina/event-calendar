@@ -32,36 +32,23 @@ public class Event {
 
     private Integer tables;
 
-    @ManyToMany
-    @JoinTable(
-            name = "event_registrations",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private Set<User> registeredUsers = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "event_registrations_reserve",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private Set<User> reserveUsers = new HashSet<>();
 
-    public Set<User> getReserveUsers() {
-        return reserveUsers;
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EventRegistration> registrations = new HashSet<>();
+
+    public Set<EventRegistration> getRegistrations() {
+        return registrations;
     }
 
-    public void setReserveUsers(Set<User> reserveUsers) {
-        this.reserveUsers = reserveUsers;
+    public void setRegistrations(Set<EventRegistration> registrations) {
+        this.registrations = registrations;
     }
 
-    public Set<User> getRegisteredUsers() {
-        return registeredUsers;
-    }
-
-    public void setRegisteredUsers(Set<User> registeredUsers) {
-        this.registeredUsers = registeredUsers;
+    public int getTotalParticipantsCount() {
+        return registrations.stream()
+                .mapToInt(reg -> 1 + reg.getAdditionalGuests())
+                .sum();
     }
 
     public String getTitle() {
