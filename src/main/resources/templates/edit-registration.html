@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактирование записи</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        textarea, select, input[type="radio"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .radio-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .radio-group label {
+            font-weight: normal;
+            flex: 1;
+            text-align: center;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #6c757d;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+        .small-number-input {
+    width: 60px;
+    height: 40px;
+    font-size: 18px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    /* Убираем спиннер полностью — добавим кастомную стрелку позже */
+    -moz-appearance: textfield; /* Firefox */
+}
+
+.small-number-input::-webkit-inner-spin-button,
+.small-number-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Теперь добавим стрелку вниз справа */
+.small-number-input-container {
+    position: relative;
+    display: inline-block;
+}
+
+.small-number-input-container::after {
+    content: "▼";  /* символ стрелки вниз */
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 18px;
+    color: #333;
+    user-select: none;
+}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Редактирование записи</h2>
+
+    <form th:action="@{'/profile/edit/' + ${registration.id}}" method="post">
+        <label for="comment">Комментарий:</label>
+        <textarea id="comment" name="comment" rows="3" th:text="${registration.comment}"></textarea>
+
+        <label for="additionalGuests">Дополнительные гости (максимум <span th:text="${registration.additionalGuests}"></span>):</label>
+        <div class="small-number-input-container">
+        <input
+                type="number"
+                id="additionalGuests"
+                name="additionalGuests"
+                th:value="${registration.additionalGuests}"
+                min="0"
+                th:attr="max=${registration.additionalGuests}"
+                step="1"
+                readonly
+                onkeydown="return false"
+                class="small-number-input"
+        />
+        </div>
+
+        <button type="submit">Сохранить изменения</button>
+    </form>
+
+    <a th:href="@{/profile}" class="back-link">Назад к профилю</a>
+</div>
+<script>
+    document.querySelector('.small-number-input-container').addEventListener('click', function(e) {
+        const input = this.querySelector('input');
+        let current = parseInt(input.value) || 0;
+        const min = parseInt(input.min) || 0;
+        if (current > min) {
+            input.value = current - 1;
+        }
+    });
+</script>
+
+</body>
+</html>

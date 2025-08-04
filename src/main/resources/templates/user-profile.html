@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль пользователя</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        thead {
+            background-color: #f1f1f1;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        th {
+            font-weight: bold;
+        }
+
+        a.edit-button {
+            padding: 5px 10px;
+            background-color: #17a2b8;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 5px;
+            display: inline-block;
+        }
+
+        a.edit-button:hover {
+            background-color: #138496;
+        }
+
+        .delete-button {
+            background-color: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .delete-button:hover {
+            background-color: #c82333;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .back-button {
+            display: block;
+            margin: 30px auto 0;
+            text-align: center;
+            background-color: #6c757d;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            width: fit-content;
+        }
+
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Мои записи</h2>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Мероприятие</th>
+            <th>Дата</th>
+            <th>Комментарий</th>
+            <th>Гости</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="reg : ${registrations}">
+            <td th:text="${reg.event.title}">Название</td>
+            <td th:text="${#temporals.format(reg.event.startTime, 'dd.MM.yyyy HH:mm')}">01.01.2025 18:00</td>
+            <td th:text="${reg.comment}">Комментарий</td>
+            <td th:text="${reg.additionalGuests}">0</td>
+            <td class="actions">
+                <a th:href="@{'/profile/edit/' + ${reg.id}}" class="edit-button">Изменить</a>
+                <form th:action="@{'/profile/delete/' + ${reg.id}}" method="post" style="margin: 0;">
+                    <button type="submit" class="delete-button">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a th:href="@{/home}" class="back-button">Назад к календарю</a>
+</div>
+
+</body>
+</html>

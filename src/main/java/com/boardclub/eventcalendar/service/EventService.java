@@ -135,4 +135,27 @@ public class EventService {
 
         eventRegistrationRepository.delete(registration);
     }
+
+    // Найти все регистрации пользователя
+    public List<EventRegistration> findRegistrationsByUser(User user) {
+        return eventRegistrationRepository.findByUser(user);
+    }
+
+    // Найти регистрацию по ID
+    public EventRegistration findRegistrationById(Long id) {
+        return eventRegistrationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Регистрация не найдена"));
+    }
+
+    // Удалить регистрацию
+    public void deleteRegistration(Long id) {
+        eventRegistrationRepository.deleteById(id);
+    }
+
+    // Сохранить регистрацию
+    public void saveRegistration(EventRegistration registration) {
+        eventRegistrationRepository.save(registration);
+    }
+
+
 }

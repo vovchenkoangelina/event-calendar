@@ -133,6 +133,13 @@
         .day-link:hover {
             background-color: #0056b3;
         }
+
+        .auth-button.profile {
+    background-color: #28a745;
+}
+.auth-button.profile:hover {
+    background-color: #218838;
+}
     </style>
 </head>
 <body>
@@ -154,6 +161,7 @@
             Привет, <b th:text="${#authentication.name}">пользователь</b> |
             Роли: <b th:text="${#authentication.authorities}">роль</b>
         </div>
+        <a th:href="@{/profile}" class="auth-button profile" sec:authorize="isAuthenticated()">Профиль</a>
         <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
             <button type="submit" class="logout-button">Выйти</button>
         </form>
