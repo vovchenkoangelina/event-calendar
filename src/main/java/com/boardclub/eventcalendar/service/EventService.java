@@ -6,6 +6,7 @@ import com.boardclub.eventcalendar.model.User;
 import com.boardclub.eventcalendar.repository.EventRegistrationRepository;
 import com.boardclub.eventcalendar.repository.EventRepository;
 import com.boardclub.eventcalendar.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -111,14 +112,32 @@ public class EventService {
                 .orElseThrow(() -> new RuntimeException("Событие не найдено"));
     }
 
+//    public void removeUserFromEvent(Long eventId, Long userId) {
+//            EventRegistration registration = eventRegistrationRepository.findByEventIdAndUserId(eventId, userId);
+//            eventRegistrationRepository.deleteById(registration.getId());
+//    }
+
+    @Transactional
     public void removeUserFromEvent(Long eventId, Long userId) {
-            EventRegistration registration = eventRegistrationRepository.findByEventIdAndUserId(eventId, userId);
-            eventRegistrationRepository.deleteById(registration.getId());
+        Event event = eventRepository.findByIdWithRegistrations(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        EventRegistration registration = eventRegistrationRepository.findByEventIdAndUserId(eventId, userId);
+        if (registration != null) {
+            event.getRegistrations().remove(registration); // Удаляем из коллекции!
+            eventRegistrationRepository.delete(registration); // Удаляем из БД
+        }
     }
 
     public void removeUserFromReserve(Long eventId, Long userId) {
+        Event event = eventRepository.findByIdWithRegistrations(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
         EventRegistration registration = eventRegistrationRepository.findByEventIdAndUserId(eventId, userId);
-        eventRegistrationRepository.deleteById(registration.getId());
+        if (registration != null) {
+            event.getRegistrations().remove(registration); // Удаляем из коллекции!
+            eventRegistrationRepository.delete(registration); // Удаляем из БД
+        }
     }
 
     // Найти все регистрации пользователя

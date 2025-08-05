@@ -156,31 +156,6 @@ public class EventController {
         return "event-register";
     }
 
-//    @PostMapping("/events/{id}/registerWithDetails")
-//    @PreAuthorize("isAuthenticated()")
-//    public String registerWithDetails(@PathVariable Long id,
-//                                      @RequestParam String comment,
-//                                      @RequestParam int additionalGuests,
-//                                      Principal principal) {
-//        String email = principal.getName();
-//        User user = userService.findByEmail(email);  // ← тут ты точно получаешь JPA User
-//        eventService.registerUserToEvent(id, user, additionalGuests, comment);
-//        return "redirect:/events/day?date=" + eventService.findById(id).getStartTime().toLocalDate();
-//    }
-
-//    @PostMapping("/events/{id}/register/reserve")
-//    public String registerToEventReserve(@PathVariable Long id, Principal principal, RedirectAttributes redirectAttributes) {
-//        User user = userService.findByEmail(principal.getName());
-//
-//        try {
-//            Event event = eventService.registerUserToEventReserve(id, user);
-//            redirectAttributes.addFlashAttribute("message", "Вы записаны в резерв на " + event.getTitle());
-//        } catch (RuntimeException e) {
-//            redirectAttributes.addFlashAttribute("error", e.getMessage());
-//        }
-//        return "redirect:/home";
-//    }
-
     @PostMapping("/events/{eventId}/removeUser/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public String removeUserFromEvent(@PathVariable Long eventId,

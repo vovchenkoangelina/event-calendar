@@ -32,11 +32,12 @@ public class Event {
 
     private Integer tables;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<EventRegistration> registrations = new HashSet<>();
 
     public int getTotalParticipantsCount() {
         return registrations.stream()
+                .filter(reg -> !Boolean.TRUE.equals(reg.isReserve())) // исключаем резерв
                 .mapToInt(reg -> 1 + reg.getAdditionalGuests())
                 .sum();
     }
