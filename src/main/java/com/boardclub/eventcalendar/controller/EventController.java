@@ -135,6 +135,7 @@ public class EventController {
             }
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/events/" + id + "/register";
         }
 
         return "redirect:/home";
@@ -145,6 +146,11 @@ public class EventController {
     public String showRegistrationForm(@PathVariable Long id, Model model) {
         Event event = eventService.findById(id);
         model.addAttribute("event", event);
+
+        if (!model.containsAttribute("error")) {
+            model.addAttribute("error", null);
+        }
+
         return "event-register";
     }
 

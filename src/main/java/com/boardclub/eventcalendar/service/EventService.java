@@ -66,7 +66,7 @@ public class EventService {
 
         int currentCount = event.getTotalParticipantsCount();
 
-        if (currentCount > event.getMaxParticipants()) {
+        if ((currentCount + 1 + additionalGuests) > event.getMaxParticipants()) {
             throw new RuntimeException("Достигнуто максимальное число участников с учётом дополнительных гостей");
         }
 

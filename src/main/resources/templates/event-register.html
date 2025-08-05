@@ -109,6 +109,9 @@
         <button type="submit">Записаться</button>
         <a th:href="@{/events/day(date=${event.startTime.toLocalDate()})}">Назад</a>
     </form>
+    <div th:if="${error}" class="alert alert-danger">
+        <p th:text="${error}"></p>
+    </div>
 </div>
 </body>
 </html>
