@@ -1,5 +1,6 @@
 package com.boardclub.eventcalendar.controller;
 
+import com.boardclub.eventcalendar.model.Event;
 import com.boardclub.eventcalendar.model.EventRegistration;
 import com.boardclub.eventcalendar.model.User;
 import com.boardclub.eventcalendar.service.EventService;
@@ -58,10 +59,17 @@ public class ProfileController {
                                      @RequestParam int additionalGuests,
                                      Principal principal) {
         EventRegistration registration = eventService.findRegistrationById(id);
+        int oldAdditionalGuests = registration.getAdditionalGuests();
         if (registration.getUser().getEmail().equals(principal.getName())) {
             registration.setComment(comment);
             registration.setAdditionalGuests(additionalGuests);
             eventService.saveRegistration(registration);
+        }
+        if (oldAdditionalGuests != additionalGuests) {
+            int difference = oldAdditionalGuests - additionalGuests;
+            Event event = registration.getEvent();
+            int currentCount = event.getTotalParticipantsCount();
+            event.setTotalParticipantsCount(currentCount - difference);
         }
         return "redirect:/profile";
     }

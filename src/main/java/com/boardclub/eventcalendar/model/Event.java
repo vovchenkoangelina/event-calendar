@@ -32,6 +32,8 @@ public class Event {
 
     private Integer tables;
 
+    private int totalParticipantsCount;
+
 
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -46,9 +48,16 @@ public class Event {
     }
 
     public int getTotalParticipantsCount() {
-        return registrations.stream()
+        int n;
+        n = registrations.stream()
                 .mapToInt(reg -> 1 + reg.getAdditionalGuests())
                 .sum();
+        setTotalParticipantsCount(n);
+        return n;
+    }
+
+    public void setTotalParticipantsCount(int totalParticipantsCount) {
+        this.totalParticipantsCount = totalParticipantsCount;
     }
 
     public String getTitle() {
