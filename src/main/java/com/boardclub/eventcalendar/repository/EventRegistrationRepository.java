@@ -12,4 +12,6 @@ import java.util.List;
 public interface EventRegistrationRepository extends JpaRepository<EventRegistration, Long> {
     boolean existsByEventAndUser(Event event, User user);
     List<EventRegistration> findByUser(User user);
+
+    EventRegistration findByEventIdAndUserId(Long eventId, Long userId);
 }

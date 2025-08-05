@@ -65,12 +65,6 @@ public class ProfileController {
             registration.setAdditionalGuests(additionalGuests);
             eventService.saveRegistration(registration);
         }
-        if (oldAdditionalGuests != additionalGuests) {
-            int difference = oldAdditionalGuests - additionalGuests;
-            Event event = registration.getEvent();
-            int currentCount = event.getTotalParticipantsCount();
-            event.setTotalParticipantsCount(currentCount - difference);
-        }
         return "redirect:/profile";
     }
 }

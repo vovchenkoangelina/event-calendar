@@ -64,10 +64,8 @@ public class EventService {
                 .orElseThrow(() -> new RuntimeException("Событие не найдено"));
 
         int currentCount = event.getTotalParticipantsCount();
-        int newCount = currentCount + 1 + additionalGuests;
-        event.setTotalParticipantsCount(newCount);
 
-        if (newCount > event.getMaxParticipants()) {
+        if (currentCount > event.getMaxParticipants()) {
             throw new RuntimeException("Достигнуто максимальное число участников с учётом дополнительных гостей");
         }
 
@@ -114,27 +112,13 @@ public class EventService {
     }
 
     public void removeUserFromEvent(Long eventId, Long userId) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Событие не найдено"));
-
-        EventRegistration registration = event.getRegistrations().stream()
-                .filter(reg -> !reg.isReserve() && reg.getUser().getId().equals(userId))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден в основном списке"));
-
-        eventRegistrationRepository.delete(registration);
+            EventRegistration registration = eventRegistrationRepository.findByEventIdAndUserId(eventId, userId);
+            eventRegistrationRepository.deleteById(registration.getId());
     }
 
     public void removeUserFromReserve(Long eventId, Long userId) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Событие не найдено"));
-
-        EventRegistration registration = event.getRegistrations().stream()
-                .filter(reg -> reg.isReserve() && reg.getUser().getId().equals(userId))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден в резерве"));
-
-        eventRegistrationRepository.delete(registration);
+        EventRegistration registration = eventRegistrationRepository.findByEventIdAndUserId(eventId, userId);
+        eventRegistrationRepository.deleteById(registration.getId());
     }
 
     // Найти все регистрации пользователя
