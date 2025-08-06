@@ -94,7 +94,10 @@
         </thead>
         <tbody>
         <tr th:each="reg : ${mainRegistrations}">
-            <td th:text="${reg.event.title}">Название</td>
+            <td>
+                <a th:href="@{/events/day(date=${#temporals.format(reg.event.startTime, 'yyyy-MM-dd')})}"
+                   th:text="${reg.event.title}">Название</a>
+            </td>
             <td th:text="${#temporals.format(reg.event.startTime, 'dd.MM.yyyy HH:mm')}">01.01.2025 18:00</td>
             <td th:text="${reg.comment}">Комментарий</td>
             <td th:text="${reg.additionalGuests}">0</td>
@@ -115,7 +118,10 @@
         </thead>
         <tbody>
         <tr th:each="reg : ${reserveRegistrations}">
-            <td th:text="${reg.event.title}">Название</td>
+            <td>
+                <a th:href="@{/events/day(date=${#temporals.format(reg.event.startTime, 'yyyy-MM-dd')})}"
+                   th:text="${reg.event.title}">Название</a>
+            </td>
             <td th:text="${#temporals.format(reg.event.startTime, 'dd.MM.yyyy HH:mm')}">01.01.2025 18:00</td>
             <td th:text="${reg.comment}">Комментарий</td>
             <td th:text="${reg.additionalGuests}">0</td>
