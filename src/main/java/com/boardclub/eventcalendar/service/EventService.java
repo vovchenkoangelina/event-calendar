@@ -142,7 +142,7 @@ public class EventService {
 
     // Найти все регистрации пользователя
     public List<EventRegistration> findRegistrationsByUser(User user) {
-        return eventRegistrationRepository.findByUser(user);
+        return eventRegistrationRepository.findByUserId(user.getId());
     }
 
     // Найти регистрацию по ID

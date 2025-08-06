@@ -22,13 +22,14 @@
 
         h2 {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             text-align: center;
+            margin-bottom: 30px;
         }
 
         thead {
@@ -40,57 +41,30 @@
             padding: 10px;
         }
 
-        td {
-            font-size: 14px;
-        }
-
         th {
             font-weight: bold;
         }
 
-        a.edit-button {
-            padding: 5px 10px;
-            background-color: #17a2b8;
-            color: white;
+        .edit-button, .back-button {
+            display: inline-block;
+            padding: 8px 16px;
             text-decoration: none;
             border-radius: 5px;
-            margin-right: 5px;
-            display: inline-block;
+            color: white;
         }
 
-        a.edit-button:hover {
+        .edit-button {
+            background-color: #17a2b8;
+            margin-bottom: 20px;
+        }
+
+        .edit-button:hover {
             background-color: #138496;
         }
 
-        .delete-button {
-            background-color: #dc3545;
-            color: white;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .delete-button:hover {
-            background-color: #c82333;
-        }
-
-        .actions {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-        }
-
         .back-button {
-            display: block;
-            margin: 30px auto 0;
-            text-align: center;
             background-color: #6c757d;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 5px;
-            text-decoration: none;
-            width: fit-content;
+            margin-top: 20px;
         }
 
         .back-button:hover {
@@ -101,33 +75,54 @@
 <body>
 
 <div class="container">
-    <h2>Мои записи</h2>
 
-    <table>
+    <h2 th:text="'Профиль пользователя: ' + ${user.username}">Профиль</h2>
+
+    <div style="text-align: center; margin-bottom: 30px;">
+        <a th:href="@{/profile/edit}" class="edit-button">Изменить мои данные</a>
+    </div>
+
+    <h2>Я иду на:</h2>
+    <table th:if="${mainRegistrations != null and !mainRegistrations.isEmpty()}">
         <thead>
         <tr>
             <th>Мероприятие</th>
             <th>Дата</th>
             <th>Комментарий</th>
             <th>Гости</th>
-            <th>Действия</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="reg : ${registrations}">
+        <tr th:each="reg : ${mainRegistrations}">
             <td th:text="${reg.event.title}">Название</td>
             <td th:text="${#temporals.format(reg.event.startTime, 'dd.MM.yyyy HH:mm')}">01.01.2025 18:00</td>
             <td th:text="${reg.comment}">Комментарий</td>
             <td th:text="${reg.additionalGuests}">0</td>
-            <td class="actions">
-                <a th:href="@{'/profile/edit/' + ${reg.id}}" class="edit-button">Изменить</a>
-                <form th:action="@{'/profile/delete/' + ${reg.id}}" method="post" style="margin: 0;">
-                    <button type="submit" class="delete-button">Удалить</button>
-                </form>
-            </td>
         </tr>
         </tbody>
     </table>
+    <p th:if="${mainRegistrations == null or mainRegistrations.isEmpty()}" style="text-align: center;">Нет записей в основном списке.</p>
+
+    <h2>Я в резерве на:</h2>
+    <table th:if="${reserveRegistrations != null and !reserveRegistrations.isEmpty()}">
+        <thead>
+        <tr>
+            <th>Мероприятие</th>
+            <th>Дата</th>
+            <th>Комментарий</th>
+            <th>Гости</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="reg : ${reserveRegistrations}">
+            <td th:text="${reg.event.title}">Название</td>
+            <td th:text="${#temporals.format(reg.event.startTime, 'dd.MM.yyyy HH:mm')}">01.01.2025 18:00</td>
+            <td th:text="${reg.comment}">Комментарий</td>
+            <td th:text="${reg.additionalGuests}">0</td>
+        </tr>
+        </tbody>
+    </table>
+    <p th:if="${reserveRegistrations == null or reserveRegistrations.isEmpty()}" style="text-align: center;">Нет записей в резерве.</p>
 
     <a th:href="@{/home}" class="back-button">Назад к календарю</a>
 </div>

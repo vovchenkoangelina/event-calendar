@@ -6,6 +6,16 @@ public class UserDto {
     private String password;
     private String confirmPassword;
 
+    private String telegramNickname;
+
+    public String getTelegramNickname() {
+        return telegramNickname;
+    }
+
+    public void setTelegramNickname(String telegramNickname) {
+        this.telegramNickname = telegramNickname;
+    }
+
     // геттеры и сеттеры
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }

@@ -2,6 +2,7 @@ package com.boardclub.eventcalendar.controller;
 
 import com.boardclub.eventcalendar.model.Event;
 import com.boardclub.eventcalendar.model.User;
+import com.boardclub.eventcalendar.model.EventRegistration;
 import com.boardclub.eventcalendar.repository.UserRepository;
 import com.boardclub.eventcalendar.service.EventService;
 import com.boardclub.eventcalendar.service.UserService;
@@ -161,6 +162,20 @@ public class EventController {
         model.addAttribute("isReserve", true);
         return "event-register";
     }
+
+    @GetMapping("/user/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String getUserProfileForAdmin(@PathVariable Long id, Model model) {
+        User user = userService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        List<EventRegistration> registrations = eventService.findRegistrationsByUser(user);
+
+        model.addAttribute("user", user);
+        model.addAttribute("registrations", registrations);
+
+        return "user-profile-for-admin";
+    }
+
 
     @PostMapping("/events/{eventId}/removeUser/{userId}")
     @PreAuthorize("hasRole('ADMIN')")

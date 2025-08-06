@@ -104,7 +104,13 @@
         <p><strong>Записались:</strong></p>
         <ul>
             <li th:each="reg : ${event.registrations.?[!reserve]}">
-                <span th:text="${reg.user.username}">Имя</span>
+                <!-- Если пользователь — админ, отображаем имя как ссылку -->
+                <span sec:authorize="hasRole('ROLE_ADMIN')">
+    <a th:href="@{/user/{id}(id=${reg.user.id})}" th:text="${reg.user.username}"></a>
+</span>
+
+                <!-- Если не админ — просто текст -->
+                <span sec:authorize="!hasRole('ROLE_ADMIN')" th:text="${reg.user.username}">Имя</span>
                 <span th:if="${reg.additionalGuests > 0}">(+<span th:text="${reg.additionalGuests}">1</span>)</span>
                 <span th:if="${reg.comment != null and !#strings.isEmpty(reg.comment)}"> — <i th:text="${reg.comment}"></i></span>
 
@@ -143,7 +149,13 @@
             <p><strong>Резерв:</strong></p>
             <ul>
                 <li th:each="reg : ${event.registrations.?[reserve]}">
-                    <span th:text="${reg.user.username}">Имя</span>
+                    <!-- Если пользователь — админ, отображаем имя как ссылку -->
+                    <span sec:authorize="hasRole('ROLE_ADMIN')">
+    <a th:href="@{/user/{id}(id=${reg.user.id})}" th:text="${reg.user.username}"></a>
+</span>
+
+                    <!-- Если не админ — просто текст -->
+                    <span sec:authorize="!hasRole('ROLE_ADMIN')" th:text="${reg.user.username}">Имя</span>
                     <span th:if="${reg.additionalGuests > 0}">(+<span th:text="${reg.additionalGuests}">1</span>)</span>
                     <span th:if="${reg.comment != null and !#strings.isEmpty(reg.comment)}"> — <i th:text="${reg.comment}"></i></span>
 
