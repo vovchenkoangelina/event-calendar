@@ -13,7 +13,11 @@ public class UserDto {
     }
 
     public void setTelegram(String telegram) {
-        this.telegram = telegram;
+        if (telegram != null && telegram.startsWith("@")) {
+            this.telegram = telegram.substring(1); // удаляем '@'
+        } else {
+            this.telegram = telegram;
+        }
     }
 
     // геттеры и сеттеры

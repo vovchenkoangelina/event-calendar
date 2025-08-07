@@ -41,23 +41,28 @@
             table-layout: fixed;
         }
 
-.calendar-table th {
-    border: 1px solid #ccc;
-    padding: 5px;
-    height: 40px; /* меньше высота для заголовков */
-    vertical-align: middle; /* по центру вертикально */
-    text-align: center; /* можно по центру для дней недели */
-    background-color: #f1f1f1;
-}
+        .calendar-table th {
+            border: 1px solid #ccc;
+            padding: 5px;
+            height: 40px;
+            vertical-align: middle;
+            text-align: center;
+            background-color: #f1f1f1;
+        }
 
-.calendar-table td {
-    border: 1px solid #ccc;
-    padding: 5px;
-    height: 100px; /* для ячеек с датами и событиями */
-    vertical-align: top;
-    text-align: left;
-    overflow-wrap: break-word;
-}
+        .calendar-table td {
+            border: 1px solid #ccc;
+            padding: 5px;
+            height: 100px;
+            vertical-align: top;
+            text-align: left;
+            overflow-wrap: break-word;
+        }
+
+        .calendar-table td.other-month {
+            background-color: #f0f0f0;
+            color: #888;
+        }
 
         .event {
             font-size: 12px;
@@ -69,35 +74,68 @@
         }
 
         .nav-links {
-            margin: 10px 0;
-            text-align: center;
-        }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+
+.nav-button {
+    background-color: transparent !important;
+    color: #555; /* серый цвет */
+    padding: 0;
+    border-radius: 0;
+    font-weight: normal;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.nav-button:hover {
+    color: #000;
+}
+
+
+.nav-button svg {
+    width: 12px;
+    height: 12px;
+}
+
+.nav-current {
+    font-weight: 700;
+    font-size: 24px;
+    min-width: 140px;
+    text-align: center;
+}
 
         .auth-button {
-    padding: 6px 12px;
-    border-radius: 5px;
-    color: white;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: bold;
-    margin-left: 10px;
-    display: inline-block;
-    transition: background-color 0.2s ease;
-}
+            padding: 6px 12px;
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 10px;
+            display: inline-block;
+            transition: background-color 0.2s ease;
+        }
 
-.auth-button.login {
-    background-color: #007bff;
-}
-.auth-button.login:hover {
-    background-color: #0056b3;
-}
+        .auth-button.login {
+            background-color: #007bff;
+        }
+        .auth-button.login:hover {
+            background-color: #0056b3;
+        }
 
-.auth-button.register {
-    background-color: #17a2b8;
-}
-.auth-button.register:hover {
-    background-color: #138496;
-}
+        .auth-button.register {
+            background-color: #17a2b8;
+        }
+        .auth-button.register:hover {
+            background-color: #138496;
+        }
 
         .logout-button {
             background-color: #dc3545;
@@ -119,6 +157,7 @@
             text-align: center;
             color: #555;
         }
+
         .day-link {
             display: inline-block;
             padding: 3px 6px;
@@ -135,11 +174,11 @@
         }
 
         .auth-button.profile {
-    background-color: #28a745;
-}
-.auth-button.profile:hover {
-    background-color: #218838;
-}
+            background-color: #28a745;
+        }
+        .auth-button.profile:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body>
@@ -156,29 +195,37 @@
 <div class="container">
 
     <div class="top-bar">
-        <!-- Если пользователь авторизован -->
+        <!-- Авторизован -->
         <div sec:authorize="isAuthenticated()">
-            Привет, <b th:text="${#authentication.name}">пользователь</b> |
-            Роли: <b th:text="${#authentication.authorities}">роль</b>
+            Привет, <b th:text="${#authentication.name}">пользователь</b>
         </div>
-        <a th:href="@{/profile}" class="auth-button profile" sec:authorize="isAuthenticated()">Профиль</a>
-        <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
-            <button type="submit" class="logout-button">Выйти</button>
-        </form>
 
-        <!-- Если пользователь НЕ авторизован -->
-        <div sec:authorize="!isAuthenticated()">
+        <div style="margin-left: auto;">
+            <a th:href="@{/profile}" class="auth-button profile" sec:authorize="isAuthenticated()">Профиль</a>
+            <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display:inline;">
+                <button type="submit" class="logout-button">Выйти</button>
+            </form>
+        </div>
+
+        <!-- Неавторизован -->
+        <div sec:authorize="!isAuthenticated()" style="margin-left: auto;">
             <a th:href="@{/login}" class="auth-button login">Войти</a>
             <a th:href="@{/register}" class="auth-button register">Регистрация</a>
         </div>
     </div>
 
-    <h1>Календарь — <span th:text="${monthRu}">Июль</span> <span th:text="${year}">2025</span></h1>
-
     <div class="nav-links">
-        <a th:href="@{/home(view='day')}">День</a> |
-        <a th:href="@{/home(view='week')}">Неделя</a> |
-        <a th:href="@{/home(view='month')}">Месяц</a>
+        <a th:href="@{/home(date=${currentDate.minusMonths(1)})}" class="nav-button" title="Предыдущий месяц" aria-label="Предыдущий месяц">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L6.707 7l4.647 4.646a.5.5 0 0 1-.708.708l-5-5a.5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708 0z"/>
+            </svg>
+        </a>
+        <span class="nav-current" th:text="${monthRu + ' ' + year}">Август 2025</span>
+        <a th:href="@{/home(date=${currentDate.plusMonths(1)})}" class="nav-button" title="Следующий месяц" aria-label="Следующий месяц">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M4.646 14.354a.5.5 0 0 1 0-.708L9.293 9 4.646 4.354a.5.5 0 1 1 .708-.708l5 5a.5.5 0 0 1 0 .708l-5 5a.5.5 0 0 1-.708 0z"/>
+            </svg>
+        </a>
     </div>
 
     <div class="nav-links">
@@ -202,12 +249,11 @@
         </thead>
         <tbody>
         <tr th:each="week : ${weeks}">
-            <td th:each="day : ${week}" valign="top">
-
+            <td th:each="day : ${week}"
+                th:classappend="${!day.currentMonth} ? 'other-month'">
                 <a th:href="@{/events/day(date=${day.date})}"
                    th:text="${day.date.dayOfMonth}"
                    class="day-link"></a>
-
                 <ul>
                     <li th:each="event : ${day.events}">
                         <span th:text="${#temporals.format(event.startTime, 'HH:mm')}">00:00</span>
@@ -219,13 +265,7 @@
         </tbody>
     </table>
 
-    <div>
-        Роли пользователя (полный список):
-        <ul>
-            <li th:each="auth : ${#authentication.authorities}" th:text="${auth.getAuthority()}">ROLE</li>
-        </ul>
-    </div>
-
 </div>
+
 </body>
 </html>

@@ -83,7 +83,13 @@
     <div class="info">
         <p><strong>Email:</strong> <span th:text="${user.email}">email</span></p>
         <p><strong>Telegram:</strong>
-            <span th:if="${user.telegram != null}" th:text="${user.telegram}">tg</span>
+            <span th:if="${user.telegram != null}">
+        <a th:href="'https://t.me/' + ${user.telegram}"
+           th:text="'@' + ${user.telegram}"
+           target="_blank"
+           rel="noopener noreferrer">
+        </a>
+    </span>
             <span th:if="${user.telegram == null}">—</span>
         </p>
     </div>

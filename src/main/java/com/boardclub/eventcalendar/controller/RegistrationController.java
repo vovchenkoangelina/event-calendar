@@ -41,6 +41,7 @@ public class RegistrationController {
         User user = new User();
         user.setUsername(userDto.getUsername());
         user.setEmail(userDto.getEmail());
+        user.setTelegram(userDto.getTelegram());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         long userCount = userRepository.count();

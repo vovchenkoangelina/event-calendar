@@ -24,6 +24,11 @@ public class HomeController {
         this.eventService = eventService;
     }
 
+    private static final String[] MONTHS_NOMINATIVE = {
+            "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
+            "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+    };
+
     @GetMapping("/")
     public String redirectToHome() {
         return "redirect:/home";
@@ -32,20 +37,32 @@ public class HomeController {
     @GetMapping("/home")
     public String showCalendar(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(required = false) Integer prev,
+            @RequestParam(required = false) Integer next,
             @RequestParam(defaultValue = "month") String view,
             Model model
     ) {
-        LocalDate currentDate = (date != null) ? date : LocalDate.now();
+        LocalDate currentDate;
+
+        LocalDate baseDate = (date != null) ? date : LocalDate.now();
+
+        if (prev != null) {
+            currentDate = baseDate.minusMonths(1);
+        } else if (next != null) {
+            currentDate = baseDate.plusMonths(1);
+        } else {
+            currentDate = baseDate;
+        }
+
         YearMonth yearMonth = YearMonth.from(currentDate);
 
-        // Добавляем месяц и год в model
-        String monthRu = currentDate.getMonth().getDisplayName(TextStyle.FULL, new Locale("ru"));
+        String monthRu = MONTHS_NOMINATIVE[currentDate.getMonthValue() - 1];
         model.addAttribute("monthRu", monthRu);
         model.addAttribute("year", currentDate.getYear());
 
         LocalDate firstOfMonth = yearMonth.atDay(1);
         DayOfWeek firstWeekDay = firstOfMonth.getDayOfWeek();
-        int shift = firstWeekDay.getValue() - 1; // сделать понедельник = 0, воскресенье = 6
+        int shift = firstWeekDay.getValue() - 1;
 
         LocalDate calendarStart = firstOfMonth.minusDays(shift);
         List<List<DayWithEvents>> weeks = new ArrayList<>();
@@ -55,7 +72,8 @@ public class HomeController {
             for (int day = 0; day < 7; day++) {
                 LocalDate dayDate = calendarStart.plusDays(week * 7 + day);
                 List<Event> events = eventService.getEventsForDay(dayDate);
-                weekDays.add(new DayWithEvents(dayDate, events));
+                boolean isCurrentMonth = dayDate.getMonth() == currentDate.getMonth();
+                weekDays.add(new DayWithEvents(dayDate, events, isCurrentMonth));
             }
             weeks.add(weekDays);
         }
@@ -64,5 +82,8 @@ public class HomeController {
         model.addAttribute("currentDate", currentDate);
         return "home";
     }
+
+
+
 
 }
