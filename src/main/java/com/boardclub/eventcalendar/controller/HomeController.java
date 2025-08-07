@@ -42,48 +42,74 @@ public class HomeController {
             @RequestParam(defaultValue = "month") String view,
             Model model
     ) {
+        LocalDate baseDate = (date != null) ? date : LocalDate.now();
         LocalDate currentDate;
 
-        LocalDate baseDate = (date != null) ? date : LocalDate.now();
-
-        if (prev != null) {
-            currentDate = baseDate.minusMonths(1);
-        } else if (next != null) {
-            currentDate = baseDate.plusMonths(1);
-        } else {
-            currentDate = baseDate;
-        }
-
-        YearMonth yearMonth = YearMonth.from(currentDate);
-
-        String monthRu = MONTHS_NOMINATIVE[currentDate.getMonthValue() - 1];
-        model.addAttribute("monthRu", monthRu);
-        model.addAttribute("year", currentDate.getYear());
-
-        LocalDate firstOfMonth = yearMonth.atDay(1);
-        DayOfWeek firstWeekDay = firstOfMonth.getDayOfWeek();
-        int shift = firstWeekDay.getValue() - 1;
-
-        LocalDate calendarStart = firstOfMonth.minusDays(shift);
-        List<List<DayWithEvents>> weeks = new ArrayList<>();
-
-        for (int week = 0; week < 6; week++) {
-            List<DayWithEvents> weekDays = new ArrayList<>();
-            for (int day = 0; day < 7; day++) {
-                LocalDate dayDate = calendarStart.plusDays(week * 7 + day);
-                List<Event> events = eventService.getEventsForDay(dayDate);
-                boolean isCurrentMonth = dayDate.getMonth() == currentDate.getMonth();
-                weekDays.add(new DayWithEvents(dayDate, events, isCurrentMonth));
+        if ("week".equals(view)) {
+            // Навигация по неделям
+            if (prev != null) {
+                currentDate = baseDate.minusWeeks(1);
+            } else if (next != null) {
+                currentDate = baseDate.plusWeeks(1);
+            } else {
+                currentDate = baseDate;
             }
-            weeks.add(weekDays);
+
+            // Найдём понедельник текущей недели
+            LocalDate startOfWeek = currentDate.with(DayOfWeek.MONDAY);
+
+            // Формируем список дней недели с событиями
+            List<DayWithEvents> weekDays = new ArrayList<>();
+            for (int i = 0; i < 7; i++) {
+                LocalDate dayDate = startOfWeek.plusDays(i);
+                List<Event> events = eventService.getEventsForDay(dayDate);
+                weekDays.add(new DayWithEvents(dayDate, events, true)); // для недели все дни текущие
+            }
+
+            model.addAttribute("weekDays", weekDays);
+            model.addAttribute("currentDate", currentDate);
+            model.addAttribute("startOfWeek", startOfWeek);
+            model.addAttribute("view", "week");
+
+        } else {
+            // Месячный вид с навигацией по месяцам
+            if (prev != null) {
+                currentDate = baseDate.minusMonths(1);
+            } else if (next != null) {
+                currentDate = baseDate.plusMonths(1);
+            } else {
+                currentDate = baseDate;
+            }
+
+            YearMonth yearMonth = YearMonth.from(currentDate);
+            String monthRu = MONTHS_NOMINATIVE[currentDate.getMonthValue() - 1];
+            model.addAttribute("monthRu", monthRu);
+            model.addAttribute("year", currentDate.getYear());
+
+            LocalDate firstOfMonth = yearMonth.atDay(1);
+            DayOfWeek firstWeekDay = firstOfMonth.getDayOfWeek();
+            int shift = firstWeekDay.getValue() - 1;
+
+            LocalDate calendarStart = firstOfMonth.minusDays(shift);
+            List<List<DayWithEvents>> weeks = new ArrayList<>();
+
+            for (int week = 0; week < 6; week++) {
+                List<DayWithEvents> weekDays = new ArrayList<>();
+                for (int day = 0; day < 7; day++) {
+                    LocalDate dayDate = calendarStart.plusDays(week * 7 + day);
+                    List<Event> events = eventService.getEventsForDay(dayDate);
+                    boolean isCurrentMonth = dayDate.getMonth() == currentDate.getMonth();
+                    weekDays.add(new DayWithEvents(dayDate, events, isCurrentMonth));
+                }
+                weeks.add(weekDays);
+            }
+
+            model.addAttribute("weeks", weeks);
+            model.addAttribute("currentDate", currentDate);
+            model.addAttribute("view", "month");
         }
 
-        model.addAttribute("weeks", weeks);
-        model.addAttribute("currentDate", currentDate);
         return "home";
     }
-
-
-
 
 }
