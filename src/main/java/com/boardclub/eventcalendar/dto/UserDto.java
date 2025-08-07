@@ -6,14 +6,14 @@ public class UserDto {
     private String password;
     private String confirmPassword;
 
-    private String telegramNickname;
+    private String telegram;
 
-    public String getTelegramNickname() {
-        return telegramNickname;
+    public String getTelegram() {
+        return telegram;
     }
 
-    public void setTelegramNickname(String telegramNickname) {
-        this.telegramNickname = telegramNickname;
+    public void setTelegram(String telegram) {
+        this.telegram = telegram;
     }
 
     // геттеры и сеттеры
