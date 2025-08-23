@@ -12,7 +12,7 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 30px auto;
             padding: 20px;
             background-color: white;
@@ -45,12 +45,13 @@
             font-weight: bold;
         }
 
-        .edit-button, .back-button {
+        .edit-button, .back-button, .action-btn {
             display: inline-block;
-            padding: 8px 16px;
+            padding: 6px 12px;
             text-decoration: none;
             border-radius: 5px;
             color: white;
+            font-size: 14px;
         }
 
         .edit-button {
@@ -69,6 +70,36 @@
 
         .back-button:hover {
             background-color: #5a6268;
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .btn-edit:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+
+        .actions {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .actions form {
+            display: inline;
+            margin: 0;
         }
     </style>
 </head>
@@ -90,6 +121,7 @@
             <th>Дата</th>
             <th>Комментарий</th>
             <th>Гости</th>
+            <th>Действия</th>
         </tr>
         </thead>
         <tbody>
@@ -101,6 +133,15 @@
             <td th:text="${#temporals.format(reg.event.startTime, 'dd.MM.yyyy HH:mm')}">01.01.2025 18:00</td>
             <td th:text="${reg.comment}">Комментарий</td>
             <td th:text="${reg.additionalGuests}">0</td>
+            <td class="actions">
+                <a th:href="@{/profile/edit/{id}(id=${reg.id})}" class="action-btn btn-edit">Редактировать</a>
+                <form th:action="@{/profile/delete/{id}(id=${reg.id})}" method="post" style="display:inline;">
+                    <button type="submit" class="action-btn btn-delete"
+                            onclick="return confirm('Точно удалить эту запись?');">
+                        Удалить
+                    </button>
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>
@@ -114,6 +155,7 @@
             <th>Дата</th>
             <th>Комментарий</th>
             <th>Гости</th>
+            <th>Действия</th>
         </tr>
         </thead>
         <tbody>
@@ -125,6 +167,15 @@
             <td th:text="${#temporals.format(reg.event.startTime, 'dd.MM.yyyy HH:mm')}">01.01.2025 18:00</td>
             <td th:text="${reg.comment}">Комментарий</td>
             <td th:text="${reg.additionalGuests}">0</td>
+            <td class="actions">
+                <a th:href="@{/profile/edit/{id}(id=${reg.id})}" class="action-btn btn-edit">Редактировать</a>
+                <form th:action="@{/profile/delete/{id}(id=${reg.id})}" method="post" style="display:inline;">
+                    <button type="submit" class="action-btn btn-delete"
+                            onclick="return confirm('Точно удалить эту запись?');">
+                        Удалить
+                    </button>
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>

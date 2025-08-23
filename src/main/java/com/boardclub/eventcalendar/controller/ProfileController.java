@@ -53,8 +53,9 @@ public class ProfileController {
     @PostMapping("/delete/{id}")
     public String deleteRegistration(@PathVariable Long id, Principal principal) {
         EventRegistration registration = eventService.findRegistrationById(id);
+        // Проверяем, что удаляет именно владелец
         if (registration.getUser().getEmail().equals(principal.getName())) {
-            eventService.deleteRegistration(id);
+            eventService.removeRegistration(registration);
         }
         return "redirect:/profile";
     }

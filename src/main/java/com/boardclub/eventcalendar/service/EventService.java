@@ -112,10 +112,18 @@ public class EventService {
                 .orElseThrow(() -> new RuntimeException("Событие не найдено"));
     }
 
-//    public void removeUserFromEvent(Long eventId, Long userId) {
-//            EventRegistration registration = eventRegistrationRepository.findByEventIdAndUserId(eventId, userId);
-//            eventRegistrationRepository.deleteById(registration.getId());
-//    }
+    @Transactional
+    public void removeRegistration(EventRegistration registration) {
+        Event event = registration.getEvent();
+        if (event != null) {
+            event.getRegistrations().remove(registration); // убираем из коллекции
+        }
+        eventRegistrationRepository.delete(registration);
+    }
+
+    public EventRegistration findRegistrationByEventAndUser(Long eventId, Long userId) {
+        return eventRegistrationRepository.findByEventIdAndUserId(eventId, userId);
+    }
 
     @Transactional
     public void removeUserFromEvent(Long eventId, Long userId) {
