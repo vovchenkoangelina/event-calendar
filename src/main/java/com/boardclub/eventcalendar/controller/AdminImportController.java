@@ -14,9 +14,6 @@ public class AdminImportController {
 
     private final CsvEventImporter importer;
 
-    public AdminImportController(CsvEventImporter importer) {
-        this.importer = importer;
-    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/import-csv")
