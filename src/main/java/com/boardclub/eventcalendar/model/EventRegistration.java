@@ -17,7 +17,7 @@ public class EventRegistration {
     private User user;
 
     @Column(name = "additional_guests")
-    private Integer additionalGuests; // 0, 1, 2, или 3
+    private Integer additionalGuests;
 
     private String comment;
 
@@ -31,7 +31,6 @@ public class EventRegistration {
     public void setReserve(Boolean reserve) {
         this.reserve = reserve;
     }
-
 
     public Long getId() {
         return id;

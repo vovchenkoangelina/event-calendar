@@ -45,7 +45,6 @@ public class CsvEventImporter {
                 }
 
                 try {
-                    // Читаем значения по колонкам
                     String dateStr         = safeGet(line, 0); // Дата
                     String title           = safeGet(line, 1); // Название
                     String price           = safeGet(line, 2); // Стоимость
@@ -56,7 +55,6 @@ public class CsvEventImporter {
                     String host            = safeGet(line, 7); // Организатор
                     String tablesStr       = safeGet(line, 8); // Количество столов
 
-                    // Обработка даты
                     String cleanedDateStr = extractDate(dateStr);
                     if (cleanedDateStr.isEmpty()) {
                         System.out.println("⛔ Не удалось распознать дату на строке " + rowNumber + ": " + dateStr);
@@ -71,7 +69,6 @@ public class CsvEventImporter {
                     }
                     LocalDateTime startTime = LocalDateTime.of(date, time);
 
-                    // Создаём Event
                     Event event = new Event();
                     event.setTitle(title);
                     event.setPrice(price);

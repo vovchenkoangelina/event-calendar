@@ -99,7 +99,7 @@ public class EventService {
         registration.setUser(user);
         registration.setAdditionalGuests(additionalGuests);
         registration.setComment(comment);
-        registration.setReserve(true); // Резервный список
+        registration.setReserve(true);
 
         System.out.println(">>> Регистрируем в резерв: " + user.getUsername() + ", guests: " + additionalGuests);
         System.out.println(">>> reserve = " + registration.isReserve());
@@ -116,7 +116,7 @@ public class EventService {
     public void removeRegistration(EventRegistration registration) {
         Event event = registration.getEvent();
         if (event != null) {
-            event.getRegistrations().remove(registration); // убираем из коллекции
+            event.getRegistrations().remove(registration);
         }
         eventRegistrationRepository.delete(registration);
     }
@@ -125,49 +125,28 @@ public class EventService {
         return eventRegistrationRepository.findByEventIdAndUserId(eventId, userId);
     }
 
-    @Transactional
-    public void removeUserFromEvent(Long eventId, Long userId) {
-        Event event = eventRepository.findByIdWithRegistrations(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
-
-        EventRegistration registration = eventRegistrationRepository.findByEventIdAndUserId(eventId, userId);
-        if (registration != null) {
-            event.getRegistrations().remove(registration); // Удаляем из коллекции!
-            eventRegistrationRepository.delete(registration); // Удаляем из БД
-        }
-    }
-
     public void removeUserFromReserve(Long eventId, Long userId) {
         Event event = eventRepository.findByIdWithRegistrations(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
         EventRegistration registration = eventRegistrationRepository.findByEventIdAndUserId(eventId, userId);
         if (registration != null) {
-            event.getRegistrations().remove(registration); // Удаляем из коллекции!
-            eventRegistrationRepository.delete(registration); // Удаляем из БД
+            event.getRegistrations().remove(registration);
+            eventRegistrationRepository.delete(registration);
         }
     }
 
-    // Найти все регистрации пользователя
     public List<EventRegistration> findRegistrationsByUser(User user) {
         return eventRegistrationRepository.findByUserId(user.getId());
     }
 
-    // Найти регистрацию по ID
     public EventRegistration findRegistrationById(Long id) {
         return eventRegistrationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Регистрация не найдена"));
     }
 
-    // Удалить регистрацию
-    public void deleteRegistration(Long id) {
-        eventRegistrationRepository.deleteById(id);
-    }
-
-    // Сохранить регистрацию
     public void saveRegistration(EventRegistration registration) {
         eventRegistrationRepository.save(registration);
     }
-
 
 }

@@ -74,7 +74,6 @@ public class EventController {
         return "redirect:/home";
     }
 
-    // Отобразить форму редактирования
     @GetMapping("/events/{id}/edit")
     @PreAuthorize("hasRole('ADMIN')")
     public String showEditForm(@PathVariable Long id, Model model) {
@@ -86,10 +85,9 @@ public class EventController {
         String formattedStartTime = event.getStartTime().format(formatter);
         model.addAttribute("event", event);
         model.addAttribute("formattedStartTime", formattedStartTime);
-        return "event-edit";  // создадим этот шаблон
+        return "event-edit";
     }
 
-    // Обработать сохранение изменений
     @PostMapping("/events/{id}/edit")
     @PreAuthorize("hasRole('ADMIN')")
     public String updateEvent(@PathVariable Long id, @ModelAttribute Event event) {
@@ -97,7 +95,6 @@ public class EventController {
         return "redirect:/events/day?date=" + event.getStartTime().toLocalDate();
     }
 
-    // Удаление события
     @PostMapping("/events/{id}/delete")
     @PreAuthorize("hasRole('ADMIN')")
     public String deleteEvent(@PathVariable Long id) {
@@ -112,8 +109,6 @@ public class EventController {
         model.addAttribute("events", events);
         return "day-events";
     }
-
-
 
     @PostMapping("/events/{id}/register")
     public String registerToEvent(
@@ -176,7 +171,6 @@ public class EventController {
         return "user-profile-for-admin";
     }
 
-
     @PostMapping("/events/{eventId}/removeUser/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public String removeUserFromEvent(@PathVariable Long eventId,
@@ -192,8 +186,6 @@ public class EventController {
         LocalDate dateOnly = eventService.findById(eventId).getStartTime().toLocalDate();
         return "redirect:/events/day?date=" + dateOnly.toString();
     }
-
-
 
     @PostMapping("/events/{eventId}/removeReserveUser/{userId}")
     @PreAuthorize("hasRole('ADMIN')")

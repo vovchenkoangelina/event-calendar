@@ -85,7 +85,7 @@ public class PasswordResetController {
             tokenRepository.delete(tokenOpt.get());
 
             model.addAttribute("message", "Пароль успешно сброшен.");
-            return "login"; // можно заменить на redirect:/login
+            return "login";
         }
 
         model.addAttribute("message", "Ссылка недействительна или устарела.");

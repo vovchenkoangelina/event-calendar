@@ -46,7 +46,6 @@ public class HomeController {
         LocalDate currentDate;
 
         if ("week".equals(view)) {
-            // Навигация по неделям
             if (prev != null) {
                 currentDate = baseDate.minusWeeks(1);
             } else if (next != null) {
@@ -55,15 +54,13 @@ public class HomeController {
                 currentDate = baseDate;
             }
 
-            // Найдём понедельник текущей недели
             LocalDate startOfWeek = currentDate.with(DayOfWeek.MONDAY);
 
-            // Формируем список дней недели с событиями
             List<DayWithEvents> weekDays = new ArrayList<>();
             for (int i = 0; i < 7; i++) {
                 LocalDate dayDate = startOfWeek.plusDays(i);
                 List<Event> events = eventService.getEventsForDay(dayDate);
-                weekDays.add(new DayWithEvents(dayDate, events, true)); // для недели все дни текущие
+                weekDays.add(new DayWithEvents(dayDate, events, true));
             }
 
             model.addAttribute("weekDays", weekDays);
@@ -72,7 +69,6 @@ public class HomeController {
             model.addAttribute("view", "week");
 
         } else {
-            // Месячный вид с навигацией по месяцам
             if (prev != null) {
                 currentDate = baseDate.minusMonths(1);
             } else if (next != null) {

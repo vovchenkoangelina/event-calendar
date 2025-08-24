@@ -31,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         System.out.println("Загруженные роли пользователя: " + user.getRoles());
 
         Set<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(SimpleGrantedAuthority::new) // ← важно
+                .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toSet());
 
         return org.springframework.security.core.userdetails.User

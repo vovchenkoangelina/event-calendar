@@ -28,7 +28,6 @@ public class ProfileController {
         this.userService = userService;
     }
 
-
     @GetMapping
     public String showProfile(Model model, Principal principal) {
         User user = userService.findByEmail(principal.getName());

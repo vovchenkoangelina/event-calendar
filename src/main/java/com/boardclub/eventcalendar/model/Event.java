@@ -12,10 +12,6 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    public Long getId() {
-        return id;
-    }
-
     private String title;
 
     private String price;
@@ -37,20 +33,18 @@ public class Event {
 
     public int getTotalParticipantsCount() {
         return registrations.stream()
-                .filter(reg -> !Boolean.TRUE.equals(reg.isReserve())) // исключаем резерв
+                .filter(reg -> !Boolean.TRUE.equals(reg.isReserve()))
                 .mapToInt(reg -> 1 + reg.getAdditionalGuests())
                 .sum();
     }
-
 
     public Set<EventRegistration> getRegistrations() {
         return registrations;
     }
 
-    public void setRegistrations(Set<EventRegistration> registrations) {
-        this.registrations = registrations;
+    public Long getId() {
+        return id;
     }
-
 
     public String getTitle() {
         return title;
